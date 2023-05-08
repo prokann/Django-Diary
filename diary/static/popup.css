@@ -1,0 +1,81 @@
+#select {
+  display: none;
+}
+
+#select_days:checked ~ #select {
+    display: block;
+}
+
+#select_days:checked + label + #select {
+  display: block;
+
+}
+
+#select:checked + label + #select_days {
+  display: block;
+
+}
+
+#select_days:checked + label + .select {
+  display: block;
+
+}
+.select:checked + label + #select_days {
+  display: block;
+
+}
+
+#myForm {
+    display: block;
+}
+
+#form {
+    max-width: 40%;
+    left: 30%;
+    position: relative;
+}
+
+#new_goal {
+    width: 25%;
+}
+.open_button {
+    width: 15%;
+    border-radius: 7px;
+    }
+
+
+.form_container {
+    background-color: #BA7A41;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: white;
+    border-radius: 10px;
+}
+
+.form_container input[type=text]:valid:required, .form_container input[type=password] {
+    width: 100%;
+}
+
+.form_container input[type=text]:invalid:required, .form_container input[type=password] {
+    width: 100%;
+    background-color: brown;
+}
+
+ .form_container input[type=text]:focus, .form-container input[type=password]:focus {
+    background-color: #ddd;
+}
+
+ .form_container .btn {
+    background-color: white;
+    opacity: 0.7;
+     margin-top: 10px;
+}
+
+.form_container .cancel {
+    background-color: white;
+         margin-top: 10px;
+}
+
+ .form_container .btn:hover, .open-button:hover {
+    opacity: 1;
+}

@@ -1,0 +1,22 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <div class="container">
+        <h2>{{ user.username }}</h2>
+        <h3>{{ user.email }}</h3>
+
+        <form action="{% url 'edit_email' %}" method="POST">
+            {% csrf_token %}
+            <label>Edit email: </label>
+            <input type="text" id="email" name="email" maxlength="100" value="Input email">
+            <button type="submit">Зберігти</button>
+        </form>
+
+        <a href="{% url 'logout' %}" type="submit "> Logout </a>
+        <br>
+        <a href="{% url 'remove_user' %}">Delete account</a>
+
+    </div>
+{% endblock %}

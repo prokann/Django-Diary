@@ -1,0 +1,158 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block title %} Новий запис {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'new_note.css' %}" type="text/css">
+
+
+<form action="{% url 'save_list' %}?id_list={{ id_list }}" method="POST">
+    {% csrf_token %}
+
+    <p>Список справ</p>
+
+    <br>
+    <input type="text" id="name_list" name="name_list" maxlength="25" {% if name_list %} value="{{ name_list }}"
+           {% else %}  value="Назва списку" {% endif %}>
+
+    <select name="categories" id="cases_categories">
+        <option value="{{ category }}">{% if category %} {{ category|title }} {% else %} Виберіть категорію вашої справи
+            {% endif %}</option>
+        <option value="work">Праця</option>
+        <option value="home">Дім</option>
+        <option value="rest">Відпочинок</option>
+        <option value="development">Розвиток</option>
+    </select>
+    <br>
+    <input type="text" id="case" name="case" maxlength="100" value="{{ case }}">
+    <button type="submit">Додати справу</button>
+<!--    <button type="submit" name="save_list">Зберегти список</button>-->
+
+    <input id="id_list" name="id_list" value="{{ id_list }}" readonly hidden>
+
+    {% if list_name %}
+        <h3 style="color: blue;">Your list - {{ list_name }}</h3>
+    {% endif %}
+
+    {% if work %}
+        <h5 style="color: blue;">Work category:</h5>
+            {% for case, check in work %}
+                {% if check %}
+                    <input type="checkbox" id="work_ch" name="boxes[]" checked="checked"
+                           value="work, {{ case }}, {{ id_list }}">
+                    <label for="work_ch">{{ case }}</label>
+                {% else %}
+                    <input type="checkbox" name="boxes[]" value="work, {{ case }}, {{ id_list }}">
+                    <label for="work_ch">{{ case }}</label>
+                {% endif %}
+                <a href="{% url 'delete_case' %}?cat_case_idl=work, {{ case }}, {{ id_list }}">Delete case</a>
+                <br>
+            {% endfor %}
+        {% endif %}
+        <br>
+
+    {% if home %}
+        <h5 style="color: blue;">Home category:</h5>
+        {% for case, check in home %}
+            {% if check %}
+                <input type="checkbox" id="home_ch" name="boxes[]" checked="checked"
+                               value="home, {{ case }}, {{id_list }}">
+                <label for="home_ch">{{ case }}</label>
+            {% else %}
+                        <input type="checkbox" name="boxes[]" value="home, {{ case }}, {{id_list }}">
+                        <label for="home_ch">{{ case }}</label>
+            {% endif %}
+            <a href="{% url 'delete_case' %}?cat_case_idl=home, {{ case }}, {{ id_list }}">Delete case</a>
+    <br>
+        {% endfor %}
+        <br>
+    {% endif %}
+
+    {% if rest %}
+        <h5 style="color: blue;">Rest category:</h5>
+        {% for case, check in rest %}
+            {% if check %}
+                <input type="checkbox" id="rest_ch" name="boxes[]" checked="checked"
+                       value="rest, {{ case }}, {{ id_list }}">
+                <label for="rest_ch">{{ case }}</label>
+            {% else %}
+                <input type="checkbox" name="boxes[]" value="rest, {{ case }}, {{ id_list }}">
+                <label for="rest_ch">{{ case }}</label>
+            {% endif %}
+            <a href="{% url 'delete_case' %}?cat_case_idl=rest, {{ case }}, {{ id_list }}">Delete case</a>
+            <br>
+        {% endfor %}
+        <br>
+    {% endif %}
+
+    {% if development %}
+        <h5 style="color: blue;">Development category:</h5>
+        {% for case, check in development %}
+            {% if check %}
+                <input type="checkbox" id="development_ch" name="boxes[]" checked="checked"
+                       value="development, {{ case }}, {{ id_list }}">
+                <label for="development_ch">{{ case }}</label>
+            {% else %}
+                <input type="checkbox" name="boxes[]" value="development, {{ case }}, {{id_list }}">
+                <label for="development_ch">{{ case }}</label>
+            {% endif %}
+            <a href="{% url 'delete_case' %}?cat_case_idl=development, {{ case }}, {{ id_list }}">Delete case</a>
+            <br>
+        {% endfor %}
+        <br>
+    {% endif %}
+
+
+</form>
+
+<form action="{% url 'write_note' %}" method="POST">
+    {% csrf_token %}
+    <input id="id_note" name="id_note" value="{{ id_note }}" readonly >
+    <br>
+    <label>Настрій: </label>
+    <input type="text" id="mood" name="mood" maxlength="100" value="{{ mood }}" >
+    <p>Список</p>
+
+    <div>
+        <button>Додати блок</button>
+    </div>
+    <br>
+    <div>
+        <textarea name="note" cols="40" rows="5" style="overflow-y: scroll;">{{ note }}</textarea>
+        <br>
+    </div>
+
+    <br>
+
+    <label>Ціль випити: </label>
+    <input type="number" id="need_cups" name="need_cups" maxlength="100" value="{{ need_cups }}">
+
+    <br>
+    <label>Ви випили: </label>
+    <input type="number" id="now_cups" name="now_cups" maxlength="100" value="{{ now_cups }}">
+
+    <p>Ви випили
+        {% if now_cups %}
+            {{ now_cups }}
+           {% else %}
+            0
+           {% endif %}
+        чашок з {{ need_cups }}
+    </p>
+
+    <button type="submit" name="save_all">Зберігти запис</button>
+
+</form>
+
+    <br>
+
+<form action="{% url 'new_note' %}" method="">
+    <button type="submit">Очистити запис</button>
+</form>
+
+    <br>
+    <br>
+
+
+{% endblock %}
