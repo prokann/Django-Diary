@@ -9,7 +9,6 @@ class Note(models.Model):
     note = models.CharField(max_length=1000000)
     need_cups = models.IntegerField(default=10, blank=True, null=True)
     now_cups = models.IntegerField(default=0, blank=True, null=True)
-    # image = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100, blank=True)
 
 
 class Lists(models.Model):
@@ -56,6 +55,8 @@ class Goal(models.Model):
     friday = models.BooleanField(default=False)
     saturday = models.BooleanField(default=False)
     sunday = models.BooleanField(default=False)
+    notifications = models.BooleanField(default=False)
+    continuing = models.BooleanField(default=False)
 
 
 class GoalExec(models.Model):

@@ -19,135 +19,136 @@
 <!--        </div>-->
         {% if user.is_authenticated %}
 <!--            if nemae goals-->
-        <p>Ви маєте ціль, яку хочете досягти?</p>
-        <p>Додайте її, щоб ми могли Вам нагадати.</p>
+            <p>Ви маєте ціль, яку хочете досягти?</p>
+            <p>Додайте її, щоб ми могли Вам нагадати.</p>
 
-        <button><a href="new_goal">Додати нову ціль</a></button> <!--unhide_div-->
-        {% if goal or unhide %}
-        <div id="myForm">
+            <button><a href="new_goal">Додати нову ціль</a></button> <!--unhide_div-->
+            {% if goal or unhide %}
+                <div id="myForm">
 
-            <form id="form" name="form" class="form_container" action="{% url 'add_goal' %}" method="POST">
-                <input type="text" name="goall_id" id="goall_id" value="{{ goal_id }}" readonly hidden>
+                    <form id="form" name="form" class="form_container" action="{% url 'add_goal' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="goal_id" id="goal_id" value="{{ goal_id }}" readonly hidden>
+                        {% if unhide %}
+                            <h1 style="text-align: center;">Нова ціль</h1>
+                        {% else %}
+                            <h1 style="text-align: center;">Редагування цілі</h1>
+                        {% endif %}
 
-                {% csrf_token %}
-                <input type="text" name="goal_id" id="goal_id" value="{{ goal_id }}" readonly hidden>
-                {% if unhide %}
-                <h1 style="text-align: center;">Додайте ціль</h1>
-                {% else %}
-                <h1 style="text-align: center;">Edit ціль</h1>
-                {% endif %}
+                        <label for="goal"><b>Ціль</b></label><br>
+                        <input type="text" placeholder="goal" name="goal" id="goal" value="{{ goal }}"
+                                required>
 
-                <label for="goal"><b>Ціль</b></label><br>
-                <input type="text" placeholder="goal" name="goal" id="goal" value="{{ goal }}"
-                        required>
+                        <h5>Отримувати повідомлення</h5>
+                        <label><b>Як часто</b></label><br>
 
-                <h5>Отримувати повідомлення</h5>
-                <label><b>Як часто</b></label><br>
+                        <input type="radio" name="option" id="every_day" value="every_day" checked="checked">
+                        <label for="every_day">Every day</label><br>
 
-                <input type="radio" name="option" id="every_day" value="every_day">
-                <label for="every_day">Every day</label><br>
-
-                <input type="radio" name="option" id="select_days" value="select_days">
-                <label for="select_days">Select days</label><br>
+                        <input type="radio" name="option" id="select_days" value="select_days">
+                        <label for="select_days">Select days</label><br>
 
 
-                <div id="select">
-                    {% for day, mean in dict_days.items %}
-                    {% checkbox_input day mean %}
-    <!--                <input type="checkbox" id="{{ day }}" name="days[]" value="{{ day }}" >-->
-                    <label for="{{ day }}">{{ day }}</label>
-                    {% endfor %}
+                        <div id="select">
+                            {% for day, mean in dict_days.items %}
+                                {% checkbox_input day mean %}
+                                <label for="{{ day }}">{{ day }}</label>
+                            {% endfor %}
+                        </div>
+
+                        <br>
+                        <label><b>У котру годину</b></label><br>
+                        <select name="hour_category">
+                            <option value="{{ hour_category }}">{% if hour_category %} {{ hour_category }} {% else %}
+                                Виберіть час{% endif %}</option>
+                            {% for i in 0|range:24 %}
+                                <option value="{{ forloop.counter }}">{{ i }} година</option>
+                            {% endfor %}
+                        </select>
+                        <br>
+
+                        <label><b>У котру хвилину</b></label><br>
+                        <select name="minutes_category">
+                            <option value="{{ minutes_category }}">{% if minutes_category %} {{ minutes_category }}
+                                {% else %}Виберіть хвилину{% endif %}</option>
+                            {% for i in 0|range:60 %}
+                                <option value="{{ forloop.counter }}">{{ i }} хвилин</option>
+                            {% endfor %}
+                        </select>
+
+                        <br>
+                        <p>*Якщо ви хочете отримувати нагадування про вашу мету у Telegram, перевірте, чи додали ви
+                            свій номер телефону на сторінці <a href='{% url "profile" %}' >профілю.</a></p>
+        <!--                <p>*Коли вашу ціль буде закрито, зайдіть в редактор цілей і відмітьте її, як виконану, щоб-->
+        <!--                    повідомлення більше не приходили.</p>-->
+
+                        <button type="submit">Зберігти</button>
+                        {% if goal.notifications %}
+                            <button><a href="{% url 'notify_off' %}">Припинити повідомлення</a></button>
+                        {% else %}
+                            <button><a href="{% url 'notify_on' %}">Ввімкнути повідомлення</a></button>
+                        {% endif %}
+                        <button><a href="{% url 'close_goal' %}">Закрити ціль</a></button>
+                        <button><a href="{% url 'delete_goal' %}">Видалити ціль</a></button>
+                        <button><a href="{% url 'home' %}">Закрити</a></button>
+
+
+                    </form>
                 </div>
+            {% endif %}
 
-<!--                {% if goal %} &lt;!&ndash; edit goal &ndash;&gt;-->
-<!--                <input type="checkbox" id="every_day" name="days[]" value="Every_day">-->
-<!--                {% else %} &lt;!&ndash; new goal &ndash;&gt;-->
-<!--                <input type="checkbox" id="every_day" name="days[]" checked="checked" value="Every_day">-->
-<!--                {% endif %}-->
-<!--                <label for="every_day">Кожного дня</label><br>-->
-<!--                <label><b>АБО оберіть конкретні дні тижня:</b></label><br>-->
+            {% if goals %}
+                <h3>Your goals.</h3>
+                {% for goal in goals  %}
 
-<!--                <input type="checkbox" id="select_days" name="days[]" value="select_days">-->
-<!--                <label for="select_days">select_days </label><br>-->
+                    <h4>{{ goal.goal_name }}</h4>
 
 
-<!--                        <br>-->
+                    {% if goal.monday or goal.tuesday or goal.wednesday or goal.thursday or goal.friday or goal.saturday or goal.sunday %}
+                        <p>Ціль актуальна у:</p>
+                        {% if goal.monday %} <p>- Понеділок </p> {% endif %}
+                        {% if goal.tuesday %} <p>- Вівторок </p> {% endif %}
+                        {% if goal.wednesday %} <p>- Середу </p> {% endif %}
+                        {% if goal.thursday %} <p>- Четвер </p> {% endif %}
+                        {% if goal.friday %} <p>- П'ятницю </p> {% endif %}
+                        {% if goal.saturday %} <p>- Суботу </p> {% endif %}
+                        {% if goal.sunday %} <p>- Неділю </p> {% endif %}
+
+                    {% else %}
+                        <p>Немає даних. Ми не можемо вести для Вас статистику і надсилати повідомлення :(</p>
+                        <p>Ви можете виправити це в панелі редагування.</p>
+                    {% endif %}
 
 
+                    {% if goal.notification_hour != 25 and goal.notification_minutes != 25 %}
+                        <p>Час для повідомлень - {{ goal.notification_hour }} : {{ goal.notification_minutes }}</p>
+                    {% else %}
+                        <p>Час для повідомлень не вказано, тому приходити вони не будуть.</p>
+                    {% endif %}
 
-                <br>
-                <label><b>У котру годину</b></label><br>
-                <select name="hour_category">
-                    <option value="{{ hour_category }}">{% if hour_category %} {{ hour_category }} {% else %}
-                        Виберіть час{% endif %}</option>
-                    {% for i in 0|range:24 %}
-                        <option value="{{ forloop.counter }}">{{ i }} година</option>
-                    {% endfor %}
-                </select>
-                <br>
+                    <a href="{% url 'edit_goal' %}?goal_id={{goal.goal_id}}">Редагувати ціль</a>
+                    {% if goal.notifications %}
+                        <a href="{% url 'notify_off' %}?goal_id={{goal.goal_id}}">Припинити повідомлення</a>
+                    {% else %}
+                        <a href="{% url 'notify_on' %}?goal_id={{goal.goal_id}}">Ввімкнути повідомлення</a>
+                    {% endif %}
+                    <a href="{% url 'close_goal' %}?goal_id={{goal.goal_id}}">Закрити ціль</a>
+                    <a href="{% url 'delete_goal' %}?goal_id={{goal.goal_id}}">Видалити ціль</a>
 
-                <label><b>У котру хвилину</b></label><br>
-                <select name="minutes_category">
-                    <option value="{{ minutes_category }}">{% if minutes_category %} {{ minutes_category }}
-                        {% else %}Виберіть хвилину{% endif %}</option>
-                    {% for i in 0|range:60 %}
-                        <option value="{{ forloop.counter }}">{{ i }} хвилин</option>
-                    {% endfor %}
-                </select>
-
-                <br>
-                <p>*Якщо ви хочете отримувати нагадування про вашу мету у Telegram, перевірте, чи додали ви
-                    свій номер телефону на сторінці <a href='{% url "profile" %}' >профілю.</a></p>
-                <p>*Коли вашу ціль буде закрито, зайдіть в редактор цілей і відмітьте її, як виконану, щоб
-                    повідомлення більше не приходили.</p>
-
-                <button type="submit">Зберігти</button>
-                <button><a href="{% url 'home' %}">Закрити</a></button>
-
-
-            </form>
-        </div>
-        {% endif %}
-
-        {% if goals %}
-        <h3>Your goals.</h3>
-        {% for goal in goals  %}
-
-        <h4>{{ goal.goal_name }}</h4>
-<!--                         <input type="checkbox" id="every_day" name="days[]" checked="checked"-->
-<!--                                           value="Every_day">-->
-        <p>Повідомлення приходять у дні:</p>
-
-        {% if goal.monday %} <p> Понеділок </p> {% endif %}
-        {% if goal.tuesday %} <p> Вівторок </p> {% endif %}
-        {% if goal.wednesday %} <p> Середа </p> {% endif %}
-        {% if goal.thursday %} <p> Четвер </p> {% endif %}
-        {% if goal.friday %} <p> П'ятниця </p> {% endif %}
-        {% if goal.saturday %} <p> Субота </p> {% endif %}
-        {% if goal.sunday %} <p> Неділя </p> {% endif %}
-        <p>O {{ goal.notification_hour }} : {{ goal.notification_minutes }}</p>
-
-        <a href="{% url 'edit_goal' %}?goal_id={{goal.goal_id}}">Редагувати ціль</a>
-
-        <a href="{% url 'stop_goal' %}?goal_id={{goal.goal_id}}">Припинити повідомлення</a>
-<!--                    <button class="open_button" id="edit_goal" onclick="openForm({{goal.goal_id}})">Редагувати</button>-->
-
-        <a href="{% url 'delete_goal' %}?goal_id={{goal.goal_id}}">Видалити ціль</a>
-
-        <br>
-        <br>
-        <br>
-        {% endfor %}
-        {% endif %}
+                    <br>
+                    <br>
+                    <br>
+                {% endfor %}
+            {% endif %}
 
         {% else %}
-        <a href='{% url "register_user" %}' class="btn" style="color: white; background-color: #fd5e14;"
-             type="submit" id="body-link-row">Register</a>
+            <a href='{% url "register_user" %}' class="btn" style="color: white; background-color: #fd5e14;"
+                 type="submit" id="body-link-row">Register</a>
+
+            <div class="col-6 col-md-4" id="header-image"><img src="" alt=""></div>
         {% endif %}
 
-        <div class="col-6 col-md-4" id="header-image"><img src="" alt=""></div>
     </div>
 </div>
-
 
 {% endblock content %}

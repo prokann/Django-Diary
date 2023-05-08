@@ -138,6 +138,11 @@ def write_note(request):
 
         try:
             id_note = request.POST['id_note']
+
+            item = Note.objects.get(id=id_note)
+            if item.username != f'{request.user}':
+                return HttpResponse('Щось пішло не так. Спробуйте ще раз.')
+
             element = Note(id=id_note, username=request.user.username, mood=mood, note=note, need_cups=need_cups,
                            now_cups=now_cups)
             element.save()
@@ -190,6 +195,7 @@ def will_did_case(request, id_list=''):
             if not ids:
                 ids = id_list
             ids = int(ids)
+
         update_false()
 
     # if all notes
@@ -232,7 +238,12 @@ def save_list(request, id_list=''):
         pass
     if not id_list:
         id_list = request.GET.get("id_list")
-    if not id_list:
+
+    if id_list:
+        item = Lists.objects.get(list_id=id_list)
+        if item.username != f'{request.user}':
+            return HttpResponse('Щось пішло не так. Спробуйте ще раз.')
+    else:
         id_list = id_list
     try:
         need_cups = Note.objects.filter(username=request.user).values_list('need_cups').last()[0]

@@ -3,14 +3,14 @@ from django.contrib import messages
 from .forms import UserRegisterForm, RemoveUser
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Telegram
+# from .models import Telegram
 from entries.models import Goal, GoalExec
 from django.http import HttpResponse
 from .telegramViews import bot
 
 
 def telegram(request):
-    bot.polling()
+    # bot.polling()
     return HttpResponse('gf')
 
 
@@ -19,6 +19,7 @@ def unhide_div(request): #new_goal
                                                                              'wednesday': False, 'thursday': False,
                                                                              'friday': False, 'saturday': False,
                                                                              'sunday': False}})
+
 
 def edit_goal(request):
     goal_id = request.GET.get("goal_id")
@@ -33,52 +34,53 @@ def edit_goal(request):
 
 
 def add_goal(request):
-    try:
-        goal_id = request.POST['goal_id']
-        goall_id = request.POST['goall_id']
-
-    except Exception as e:
-        goal_id = False
-
     if request.method == 'POST':
         try:
             goal_id = request.POST['goal_id']
-            goall_id = request.POST['goall_id']
-
+            item = Goal.objects.get(goal_id=goal_id)
+            if item.username != f'{request.user}':
+                return HttpResponse('Щось пішло не так. Спробуйте ще раз.')
         except Exception as e:
             goal_id = False
+
         goal = request.POST.get('goal').capitalize()
         hour = request.POST.get('hour_category')
         minutes = request.POST.get('minutes_category')
-        days = request.POST.getlist('days[]')
+        days = request.POST.getlist('option')
+
+        try:
+            hour, minutes = int(hour) - 1, int(minutes) - 1
+        except Exception as e:
+            messages.error(request, f"Ви заповнили не всі поля. Тому повідомлення на ціль {goal} приходити не будуть.")
+            hour, minutes = 25, 25
 
         if goal and goal_id:
-            pass
-
+            element = Goal(goal_id=goal_id, username=request.user.username, goal_name=goal,
+                           notification_hour=hour, notification_minutes=minutes)
         elif goal:
-            element = Goal(username=request.user.username, goal_name=goal, notification_hour=int(hour) - 1,
-                           notification_minutes=int(minutes) - 1)
-            element.save()
+            element = Goal(username=request.user.username, goal_name=goal, notification_hour=hour,
+                           notification_minutes=minutes)
+        element.save()
 
-            def make_true(day):
-                Goal.objects.filter(goal_id=element.goal_id).update(**{day: True})
+        def make_true(day):
+            Goal.objects.filter(goal_id=element.goal_id).update(**{day: True})
 
-            for day in days:
-                if day == 'Every_day' and len(days) == 1:
-                    make_true('monday'), make_true('tuesday'), make_true('wednesday'), make_true('thursday'), make_true(
-                        'friday'), make_true('saturday'), make_true('sunday')
-                    return render(request, 'users/home.html')
-                else:
-                    if day == 'Every_day':
-                        continue
-                    else:
-                        make_true(day)
-        # return render(request, 'users/home.html', {'days': ['monday', 'tuesday', 'wednesday', 'thursday', 'friday',
-        #                                                     'saturday', 'sunday']})
+        if days[0] == 'every_day':
+            make_true('monday'), make_true('tuesday'), make_true('wednesday'), make_true('thursday'), make_true(
+                'friday'), make_true('saturday'), make_true('sunday')
+        else:
+            days = request.POST.getlist('days[]')
+            if len(days) > 0:
+                for day in days:
+                    make_true(day)
+            else:
+                messages.error(request,
+                                   f"Ви не вказали дні. Тому повідомлення на ціль {goal} приходити не будуть.")
+
     return home(request)
 
 
-def stop_goal(request):
+def notify_off(request):
     goal_id = request.GET.get("goal_id")
     try:
         Goal.objects.filter(goal_id=int(goal_id)).update(monday=False, tuesday=False, wednesday=False, thursday=False,
@@ -86,6 +88,14 @@ def stop_goal(request):
     except Exception as e:
         pass
     #and notificate
+    return home(request)
+
+
+def notify_on(request):
+    return home(request)
+
+
+def close_goal(request):
     return home(request)
 
 

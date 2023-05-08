@@ -108,7 +108,7 @@
 
 <form action="{% url 'write_note' %}" method="POST">
     {% csrf_token %}
-    <input id="id_note" name="id_note" value="{{ id_note }}" readonly >
+    <input id="id_note" name="id_note" value="{{ id_note }}" readonly hidden>
     <br>
     <label>Настрій: </label>
     <input type="text" id="mood" name="mood" maxlength="100" value="{{ mood }}" >

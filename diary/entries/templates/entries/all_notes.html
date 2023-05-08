@@ -47,7 +47,7 @@
 {% if notes %}
     <h3>Your notes</h3>
         {% for id_note, u, t, m, n, e, w, iterate in notes reversed  %}
-            <input type="text" name="id_note" id="id_note" value="{{ id_note }}" readonly hidden>
+            <input type="hidden" name="id_note" id="id_note" value="{{ id_note }}" readonly hidden>
 
             <br>
             <h4 style="color: blue;">Note created {{ t }}</h4>
@@ -84,7 +84,7 @@
         {% for id_list, name_list, time_list, wc, wa, hc, ha, rc, ra, dc, da in lists reversed %}
             <h4 style="color: blue;">{{ name_list }}</h4>
             <h5 style="color: blue;">List created {{ time_list }}</h5>
-            <input type="text" name="id_list" id="id_list" value="{{ id_list }}" readonly hidden>
+            <input type="hidden" name="id_list" id="id_list" value="{{ id_list }}" readonly hidden>
 
             {% if wc %}
             <p>Work category</p>
