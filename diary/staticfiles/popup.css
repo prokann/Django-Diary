@@ -1,24 +1,13 @@
-.select {
+#danger {
+    opacity: 50%;
+}
+
+#select {
   display: none;
 }
 
-#select_days:checked + label + #select {
-  display: block;
-
-}
-
-#select:checked + label + #select_days {
-  display: block;
-
-}
-
-#select_days:checked + label + .select {
-  display: block;
-
-}
-.select:checked + label + #select_days {
-  display: block;
-
+#select_days:checked ~ #select {
+    display: block;
 }
 
 #myForm {

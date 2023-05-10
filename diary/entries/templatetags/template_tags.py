@@ -22,8 +22,16 @@ def filter_range(start, end):
 
 
 @register.simple_tag
-def checkbox_input(day, mean):
-    if mean:
-        return mark_safe(f'<input type="checkbox" id="{day}" name="days[]" value="{day}" checked="checked">')
+def checkbox_input(need, done='', id=''):
+    if id:
+        if done:
+            return mark_safe(f'<input type="checkbox" id="{need}" name="days[]" value="{id}" checked>')
+        else:
+            return mark_safe(f'<input type="checkbox" id="{need}" name="days[]" value="{id}">')
+
     else:
-        return mark_safe(f'<input type="checkbox" id="{day}" name="days[]" value="{day}">')
+        if done:
+            return mark_safe(f'<input type="checkbox" id="{need}" name="days[]" value="{need}" checked>')
+        else:
+            return mark_safe(f'<input type="checkbox" id="{need}" name="days[]" value="{need}">')
+

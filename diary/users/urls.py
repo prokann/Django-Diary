@@ -16,9 +16,6 @@ urlpatterns = [
 
     path('new_goal', views.unhide_div, name="unhide_div"),
     path('add_goal', views.add_goal, name="add_goal"),
-    path('notify_off', views.notify_off, name="notify_off"),
-    path('notify_on', views.notify_on, name="notify_on"),
-    path('close_goal', views.close_goal, name="close_goal"),
     path('edit_goal', views.edit_goal, name="edit_goal"),
     path('delete_goal', views.delete_goal, name="delete_goal"),
 

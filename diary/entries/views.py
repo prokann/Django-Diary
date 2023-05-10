@@ -29,12 +29,18 @@ def time_filter(request, queryset_, class_, month_=None, year_=None, day_=None):
     return make_list(queryset_)
 
 
-def make_list(queryset_):
+def make_list(queryset_, false=''):
     list_note = []
     if len(queryset_) > 0:
-
-        for i in range(len(queryset_)):
-            list_note.append(*queryset_[i])
+        try:
+            for i in range(len(queryset_)):
+                list_note.append(*queryset_[i])
+        except Exception as e:
+            for i in range(len(queryset_)):
+                if false:
+                    list_note.append(queryset_[i] + (False,))
+                else:
+                    list_note.append(queryset_[i])
 
     return list_note
 
@@ -103,6 +109,7 @@ def return_notes_lists(request, day_='', month=''):
 
 def all_notes(request):
     notes, lists, calendar_, day_, month_n, year_ = return_notes_lists(request)
+
     return render(request, 'entries/all_notes.html', {'notes': notes, 'lists': lists,
                                                       'calendar_': calendar_, 'day_': day_,  'month_n': month_n,
                                                       'year_': year_})
@@ -133,15 +140,18 @@ def write_note(request):
         need_cups = check_field(int, need_cups)
         now_cups = check_field(int, now_cups)
 
-        if need_cups is None:
-            need_cups = Note.objects.filter(username=request.user).values_list('need_cups').last()[0]
+        try:
+            if need_cups is None:
+                need_cups = Note.objects.filter(username=request.user).values_list('need_cups').last()[0]
+        except Exception as e:
+            pass
 
         try:
             id_note = request.POST['id_note']
 
             item = Note.objects.get(id=id_note)
             if item.username != f'{request.user}':
-                return HttpResponse('Щось пішло не так. Спробуйте ще раз.')
+                return HttpResponse('Something went wrong. Try again.')
 
             element = Note(id=id_note, username=request.user.username, mood=mood, note=note, need_cups=need_cups,
                            now_cups=now_cups)
@@ -157,19 +167,26 @@ def write_note(request):
 def edit_note(request):
     id_note = request.GET.get("id_note")
     note = Note.objects.get(id=int(id_note))
-    return render(request, 'entries/new_note.html', {'mood': note.mood, 'note': note.note, 'need_cups': note.need_cups,
-                                             'now_cups': note.now_cups, 'id_note': id_note})
+    if note.username != f'{request.user}':
+        return HttpResponse('Something went wrong. Try again.')
+    else:
+        return render(request, 'entries/new_note.html', {'mood': note.mood, 'note': note.note,
+                                                         'need_cups': note.need_cups, 'now_cups': note.now_cups,
+                                                         'id_note': id_note})
 
 
 def delete_note(request):
     id_note = request.GET.get("id_note")
-
+    element = Note.objects.get(id=int(id_note))
     try:
-        element = Note.objects.get(id=int(id_note))
-        element.delete()
+        if element.username != f'{request.user}':
+            return HttpResponse('Something went wrong. Try again.')
+        else:
+            element.delete()
     except Exception as e:
-        pass
-    return all_notes(request)   # don't touch!
+        return HttpResponse('Something went wrong. Try again.')
+
+    return all_notes(request)
 
 
 # functions with lists
@@ -242,7 +259,7 @@ def save_list(request, id_list=''):
     if id_list:
         item = Lists.objects.get(list_id=id_list)
         if item.username != f'{request.user}':
-            return HttpResponse('Щось пішло не так. Спробуйте ще раз.')
+            return HttpResponse('Something went wrong. Try again.')
     else:
         id_list = id_list
     try:
@@ -316,8 +333,11 @@ def delete_list(request):
             pass
 
     id_list = request.GET.get("id_list")
+
     try:
         element = Lists.objects.get(list_id=int(id_list))
+        if element.username != f'{request.user}':
+            return HttpResponse('Something went wrong. Try again.')
 
         accept_deleted(ListsWork, id_list)
         accept_deleted(ListsHome, id_list)

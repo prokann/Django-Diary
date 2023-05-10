@@ -19,35 +19,52 @@
 <!--        </div>-->
         {% if user.is_authenticated %}
 <!--            if nemae goals-->
-            <p>Ви маєте ціль, яку хочете досягти?</p>
-            <p>Додайте її, щоб ми могли Вам нагадати.</p>
+            <p>Do you have a goal you want to achieve?</p>
+            <p>Add it so we can remind you.</p>
 
-            <button><a href="new_goal">Додати нову ціль</a></button> <!--unhide_div-->
+            <button><a href="new_goal">Add new goal</a></button> <!--unhide_div-->
+
+            {% if goals_exec %}
+                <div id="goals_exec">
+                    <form name="form_container" class="form_container" action="{% url 'home' %}" method="POST">
+                        {% csrf_token %}
+                        <p>Did you meet your goals?</p>
+                        {% for goal, today, done, id in goals_exec %}
+                            {% checkbox_input goal done id %}
+                            <label for="{{ goal }}">{{ goal }}</label>
+                            {% if today %} - today's goal!{% endif %}
+                            <br>
+                        {% endfor %}
+                        <button type="submit">Save</button>
+                    </form>
+                </div>
+            {% endif %}
+
             {% if goal or unhide %}
+
                 <div id="myForm">
 
                     <form id="form" name="form" class="form_container" action="{% url 'add_goal' %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="goal_id" id="goal_id" value="{{ goal_id }}" readonly hidden>
                         {% if unhide %}
-                            <h1 style="text-align: center;">Нова ціль</h1>
+                            <h1 style="text-align: center;">New goal</h1>
                         {% else %}
-                            <h1 style="text-align: center;">Редагування цілі</h1>
+                            <h1 style="text-align: center;">Editing a goal</h1>
                         {% endif %}
 
-                        <label for="goal"><b>Ціль</b></label><br>
-                        <input type="text" placeholder="goal" name="goal" id="goal" value="{{ goal }}"
+                        <label for="goal"><b>Goal</b></label><br>
+                        <input type="text" placeholder="Ціль" name="goal" id="goal" value="{{ goal }}"
                                 required>
 
-                        <h5>Отримувати повідомлення</h5>
-                        <label><b>Як часто</b></label><br>
+                        <h5>Receive messages</h5>
+                        <label><b>How often</b></label><br>
 
-                        <input type="radio" name="option" id="every_day" value="every_day" checked="checked">
+                        <input type="radio" name="option" id="every_day" value="every_day" checked>
                         <label for="every_day">Every day</label><br>
 
                         <input type="radio" name="option" id="select_days" value="select_days">
                         <label for="select_days">Select days</label><br>
-
 
                         <div id="select">
                             {% for day, mean in dict_days.items %}
@@ -57,40 +74,45 @@
                         </div>
 
                         <br>
-                        <label><b>У котру годину</b></label><br>
+                        <label><b>At what time?</b></label><br>
                         <select name="hour_category">
                             <option value="{{ hour_category }}">{% if hour_category %} {{ hour_category }} {% else %}
-                                Виберіть час{% endif %}</option>
+                                Select an hour{% endif %}</option>
                             {% for i in 0|range:24 %}
-                                <option value="{{ forloop.counter }}">{{ i }} година</option>
+                                <option value="{{ forloop.counter }}">{{ i }} hours</option>
                             {% endfor %}
                         </select>
                         <br>
 
-                        <label><b>У котру хвилину</b></label><br>
+                        <label><b>At what minute?</b></label><br>
                         <select name="minutes_category">
                             <option value="{{ minutes_category }}">{% if minutes_category %} {{ minutes_category }}
-                                {% else %}Виберіть хвилину{% endif %}</option>
+                                {% else %}Select a minute{% endif %}</option>
                             {% for i in 0|range:60 %}
-                                <option value="{{ forloop.counter }}">{{ i }} хвилин</option>
+                                <option value="{{ forloop.counter }}">{{ i }} minutes</option>
                             {% endfor %}
                         </select>
 
                         <br>
-                        <p>*Якщо ви хочете отримувати нагадування про вашу мету у Telegram, перевірте, чи додали ви
-                            свій номер телефону на сторінці <a href='{% url "profile" %}' >профілю.</a></p>
-        <!--                <p>*Коли вашу ціль буде закрито, зайдіть в редактор цілей і відмітьте її, як виконану, щоб-->
-        <!--                    повідомлення більше не приходили.</p>-->
+                        <div id="danger" title="This is the zone of important decisions. Are you sure about the changes?">
+                        <input type="checkbox" id="notifications" name="notifications" value="notifications" checked
+                        title="With an empty square, messages will not come...">
+                        <label for="notifications">Notification is enabled</label>
 
-                        <button type="submit">Зберігти</button>
-                        {% if goal.notifications %}
-                            <button><a href="{% url 'notify_off' %}">Припинити повідомлення</a></button>
-                        {% else %}
-                            <button><a href="{% url 'notify_on' %}">Ввімкнути повідомлення</a></button>
+                        <input type="checkbox" id="continuing" name="continuing" value="continuing" title="If you have
+                        achieved your goal, click on the square. There will be no statistics or messages on it.">
+                        <label for="continuing">Close goal</label>
+                        </div>
+
+                        <br>
+                        <p>*If you want to receive reminders about your goal in Telegram, check if you have written
+                            <a href='https://t.me/tviy_den_bot'>a bot.</a></p>
+
+                        <button type="submit">Save</button>
+                        {% if goal_id %}
+                            <button><a href="{% url 'delete_goal' %}?goal_id={{goal_id}}">Delete goal</a></button>
                         {% endif %}
-                        <button><a href="{% url 'close_goal' %}">Закрити ціль</a></button>
-                        <button><a href="{% url 'delete_goal' %}">Видалити ціль</a></button>
-                        <button><a href="{% url 'home' %}">Закрити</a></button>
+                        <button><a href="{% url 'home' %}">Close</a></button>
 
 
                     </form>
@@ -98,42 +120,35 @@
             {% endif %}
 
             {% if goals %}
-                <h3>Your goals.</h3>
+                <h3>Your goals</h3>
                 {% for goal in goals  %}
 
                     <h4>{{ goal.goal_name }}</h4>
 
 
                     {% if goal.monday or goal.tuesday or goal.wednesday or goal.thursday or goal.friday or goal.saturday or goal.sunday %}
-                        <p>Ціль актуальна у:</p>
-                        {% if goal.monday %} <p>- Понеділок </p> {% endif %}
-                        {% if goal.tuesday %} <p>- Вівторок </p> {% endif %}
-                        {% if goal.wednesday %} <p>- Середу </p> {% endif %}
-                        {% if goal.thursday %} <p>- Четвер </p> {% endif %}
-                        {% if goal.friday %} <p>- П'ятницю </p> {% endif %}
-                        {% if goal.saturday %} <p>- Суботу </p> {% endif %}
-                        {% if goal.sunday %} <p>- Неділю </p> {% endif %}
+                        <p>The goal is relevant on:</p>
+                        {% if goal.monday %} <p>- Monday </p> {% endif %}
+                        {% if goal.tuesday %} <p>- Tuesday </p> {% endif %}
+                        {% if goal.wednesday %} <p>- Wednesday </p> {% endif %}
+                        {% if goal.thursday %} <p>- Thursday </p> {% endif %}
+                        {% if goal.friday %} <p>- Friday </p> {% endif %}
+                        {% if goal.saturday %} <p>- Saturday </p> {% endif %}
+                        {% if goal.sunday %} <p>- Sunday </p> {% endif %}
 
                     {% else %}
-                        <p>Немає даних. Ми не можемо вести для Вас статистику і надсилати повідомлення :(</p>
-                        <p>Ви можете виправити це в панелі редагування.</p>
+                        <p>No data available. We cannot keep statistics and send messages for you :(</p>
+                        <p>You can fix this in the edit panel.</p>
                     {% endif %}
 
 
                     {% if goal.notification_hour != 25 and goal.notification_minutes != 25 %}
-                        <p>Час для повідомлень - {{ goal.notification_hour }} : {{ goal.notification_minutes }}</p>
+                        <p>Time for messages - {{ goal.notification_hour }} : {{ goal.notification_minutes }}</p>
                     {% else %}
-                        <p>Час для повідомлень не вказано, тому приходити вони не будуть.</p>
+                        <p>The time for messages is not specified, so they will not come.</p>
                     {% endif %}
 
-                    <a href="{% url 'edit_goal' %}?goal_id={{goal.goal_id}}">Редагувати ціль</a>
-                    {% if goal.notifications %}
-                        <a href="{% url 'notify_off' %}?goal_id={{goal.goal_id}}">Припинити повідомлення</a>
-                    {% else %}
-                        <a href="{% url 'notify_on' %}?goal_id={{goal.goal_id}}">Ввімкнути повідомлення</a>
-                    {% endif %}
-                    <a href="{% url 'close_goal' %}?goal_id={{goal.goal_id}}">Закрити ціль</a>
-                    <a href="{% url 'delete_goal' %}?goal_id={{goal.goal_id}}">Видалити ціль</a>
+                    <a href="{% url 'edit_goal' %}?goal_id={{goal.goal_id}}">Edit goal</a>
 
                     <br>
                     <br>

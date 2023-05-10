@@ -1,4 +1,3 @@
-from entries.models import Goal, GoalExec
 # from entries.views import make_list
 import time
 import telebot
@@ -24,20 +23,21 @@ def notificate():
             goals = Goal.objects.all()
 
             for goal in goals:
-                if hour == goal.notification_hour and min == goal.notification_minutes \
-                        and Telegram.objects.filter(username=goal.username).exists():
+                if goal.continuing and goal.notifications:
+                    if hour == goal.notification_hour and min == goal.notification_minutes \
+                            and Telegram.objects.filter(username=goal.username).exists():
 
-                    if 'monday' == day and goal.monday or \
-                            'tuesday' == day and goal.tuesday or \
-                            'wednesday' == day and goal.wednesday or \
-                            'thursday' == day and goal.thursday or \
-                            'friday' == day and goal.friday or \
-                            'saturday' == day and goal.saturday or \
-                            'sunday' == day and goal.sunday:
+                        if 'monday' == day and goal.monday or \
+                                'tuesday' == day and goal.tuesday or \
+                                'wednesday' == day and goal.wednesday or \
+                                'thursday' == day and goal.thursday or \
+                                'friday' == day and goal.friday or \
+                                'saturday' == day and goal.saturday or \
+                                'sunday' == day and goal.sunday:
 
-                        bot.send_message(Telegram.objects.get(username=goal.username).chat_id,
-                                     f'Зараз вже {str(hour).zfill(2)}:{str(min).zfill(2)}, прийшов час виповняти ціль - '
-                                     f'{goal.goal_name}')
+                            bot.send_message(Telegram.objects.get(username=goal.username).chat_id,
+                                         f'Зараз вже {str(hour).zfill(2)}:{str(min).zfill(2)}, прийшов час виповняти ціль - '
+                                         f'{goal.goal_name}')
 
             new_time = time.strftime('%A:%H:%M')
 

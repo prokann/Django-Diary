@@ -1,7 +1,7 @@
 {% extends 'users/base.html' %}
 {% load template_tags %}
 
-{% block title %} Новий запис {% endblock %}
+{% block title %} New note {% endblock %}
 
 {% block content %}
 
@@ -56,7 +56,7 @@
                 <br>Your note: {{ n|truncatechars:200 }}
             </div>
 
-            <button id="show_full{{iterate}}" onclick="readAll({{iterate}})">Показати повністю</button>
+            <button id="show_full{{iterate}}" onclick="readAll({{iterate}})">Show more</button>
 
             <div id="full_text{{iterate}}" style="display: none;">
                 Your username: {{ u }}
@@ -64,15 +64,16 @@
                 <br>Your note:<br>{{ n|linebreaksbr }}
                 <br>Your need_cups: {{ e }}
                 <br>Your now_cups: {{ w }}
+                <br>
             </div>
 
-            <a href="{% url 'delete_note' %}?id_note={{id_note}}">Видалити запис</a>
-            <a href="{% url 'edit_note' %}?id_note={{id_note}}">Редагувати запис</a>
+            <a href="{% url 'delete_note' %}?id_note={{id_note}}">Delete note</a>
+            <a href="{% url 'edit_note' %}?id_note={{id_note}}">Edit note</a>
 
         <br>
     {% endfor %}
 {% else %}
-    <p>Ці дати не мають записів</p>
+    <p>These dates have no records</p>
 {% endif %}
 <br>
 

@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 
 class Note(models.Model):
@@ -62,7 +63,7 @@ class Goal(models.Model):
 class GoalExec(models.Model):
     goal_id = models.IntegerField()
     approved = models.BooleanField(default=False)
-    time = models.DateTimeField(auto_now=True)
+    time = models.CharField(max_length=25, default=str(datetime.today()).split(' ')[0])
 
 
 
