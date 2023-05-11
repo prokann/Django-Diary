@@ -11,7 +11,7 @@
 <form action="{% url 'save_list' %}?id_list={{ id_list }}" method="POST">
     {% csrf_token %}
 
-    <p>List of cases</p>
+    <h1>List of cases</h1>
 
     <br>
     <input type="text" id="name_list" name="name_list" maxlength="25" {% if name_list %} value="{{ name_list }}"
@@ -107,17 +107,24 @@
 
 </form>
 
+<h1>Note</h1>
+
 <form action="{% url 'write_note' %}" method="POST">
     {% csrf_token %}
     <input id="id_note" name="id_note" value="{{ id_note }}" readonly hidden>
     <br>
-    <label>Mood: </label>
-    <input type="text" id="mood" name="mood" maxlength="100" value="{{ mood }}" >
 
-<!--    <div>-->
-<!--        <button>Додати блок</button>-->
-<!--    </div>-->
-<!--    <br>-->
+    <label>Mood: </label>
+    {% for name_mood, path in moods.items %}
+    {{mood}}
+    {{name.mood}}
+        {% if name_mood == mood %}
+            <input type="radio" name="name_mood" value="{{ name_mood }}" checked>
+        {% else %}
+            <input type="radio" name="name_mood" value="{{ name_mood }}">
+        {% endif %}
+        <img class="mood" src="{% static 'images/' %}{{ path }}" title="{{ mood }}">
+    {% endfor %}
     <div>
         <textarea name="note" cols="40" rows="5" style="overflow-y: scroll;">{{ note }}</textarea>
         <br>

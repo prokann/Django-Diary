@@ -115,6 +115,13 @@ def all_notes(request):
                                                       'year_': year_})
 
 
+moods = {'excellent': 'excellent.png',
+         'good': 'good.png',
+         'normal': 'normal.png',
+         'bad': 'bad.png',
+         'horrible': 'horrible.png'}
+
+
 def new_note(request):
     if request.method == 'GET':
         try:
@@ -122,16 +129,17 @@ def new_note(request):
         except Exception as e:
             need_cups = 15
 
-        return render(request, 'entries/new_note.html', {'need_cups': need_cups})
+        return render(request, 'entries/new_note.html', {'need_cups': need_cups, 'moods': moods})
     else:
-        return render(request, 'entries/new_note.html')
+        return render(request, 'entries/new_note.html', {'moods': moods})
 
 
 # functions with notes
 def write_note(request):
     if request.method == 'POST':
-
-        mood = request.POST['mood']
+        mood = request.POST.get('name_mood')
+        if not mood:
+            mood = 'normal'
         note = request.POST['note'].strip()
 
         need_cups = request.POST['need_cups']
@@ -161,7 +169,7 @@ def write_note(request):
             element.save()
             id_note = element.id
         return render(request, 'entries/new_note.html', {'mood': mood, 'note': note, 'need_cups': need_cups,
-                                                 'now_cups': now_cups, 'id_note': id_note})
+                                                 'now_cups': now_cups, 'id_note': id_note, 'moods': moods})
 
 
 def edit_note(request):
@@ -172,7 +180,7 @@ def edit_note(request):
     else:
         return render(request, 'entries/new_note.html', {'mood': note.mood, 'note': note.note,
                                                          'need_cups': note.need_cups, 'now_cups': note.now_cups,
-                                                         'id_note': id_note})
+                                                         'id_note': id_note, 'moods': moods})
 
 
 def delete_note(request):
@@ -393,6 +401,12 @@ def download_data(request):
             f.write('\n')
         testfile.close()
         f.close()
+
+        file_path = 'notes.txt'
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='text/plain')
+            response['Content-Disposition'] = 'attachment; filename="notes.txt"'
+            return response
     return all_notes(request)
 
 

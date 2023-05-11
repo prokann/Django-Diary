@@ -60,7 +60,10 @@
 
             <div id="full_text{{iterate}}" style="display: none;">
                 Your username: {{ u }}
-                <br>Your mood: {{ m }}
+                <br>Your mood:
+                <img class="mood" src="{% static 'images/' %}{{ m }}.png" title="{{ m }}">
+
+<!--                <br>Your mood: {{ m }}-->
                 <br>Your note:<br>{{ n|linebreaksbr }}
                 <br>Your need_cups: {{ e }}
                 <br>Your now_cups: {{ w }}
@@ -150,18 +153,16 @@
                     <br>
                 {% endfor %}
             {% endif %}
-            <button type='submit'  title="Обов'язково, якщо Ви змінювали виконаність справ">Зберегти зміни</button>
+            <button type='submit'  title="It is mandatory if you changed the execution of cases">Save changes</button>
 
-<!--            <a href="{% url 'will_did_case' %}?id_list={{id_list}}" title="Обов'язково, якщо Ви змінювали виконаність-->
-<!--             справ">Зберегти зміни</a>-->
-            <a href="{% url 'delete_list' %}?id_list={{id_list}}">Видалити список</a>
-            <a href="{% url 'save_list' %}?id_list={{id_list}}">Редагувати список</a>
+            <a href="{% url 'delete_list' %}?id_list={{id_list}}">Delete list</a>
+            <a href="{% url 'save_list' %}?id_list={{id_list}}">Edit list</a>
 
 
         {% endfor %}
 
     {% else %}
-        <p>Ці дати не мають списків</p>
+        <p>These dates have no lists</p>
     {% endif %}
 </form>
 

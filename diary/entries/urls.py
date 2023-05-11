@@ -19,6 +19,8 @@ urlpatterns = [
 
     path('download_data', views.download_data, name="download_data"),
 
+    # path('mood_images', mood_images, name='mood_images'),
+
 
     # path('filter_date', views.filter_date, name="filter_date"),
     # path('show_notices', views.show_notices, name="show_notices"),
