@@ -1,10 +1,16 @@
 from django.shortcuts import render
-from django.core import serializers
 from django.core.files import File
 from .models import Note, Lists, ListsWork, ListsHome, ListsRest, ListsDevelopment
 from datetime import datetime
 from calendar import HTMLCalendar, month_name, monthrange
 from django.http import HttpResponse
+from django.db.models.functions import ExtractMonth, ExtractYear, TruncDay
+from django.db.models import Max
+import calendar
+from django.db.models import F, Window
+import urllib, base64
+import plotly.graph_objs as go
+from .models import Goal, GoalExec
 
 
 # standard funcs
@@ -115,11 +121,11 @@ def all_notes(request):
                                                       'year_': year_})
 
 
-moods = {'excellent': 'excellent.png',
-         'good': 'good.png',
+moods = {'success': 'success.png',
+         'satisfactory': 'satisfactory.png',
          'normal': 'normal.png',
          'bad': 'bad.png',
-         'horrible': 'horrible.png'}
+         'awful': 'awful.png'}
 
 
 def new_note(request):
@@ -152,7 +158,10 @@ def write_note(request):
             if need_cups is None:
                 need_cups = Note.objects.filter(username=request.user).values_list('need_cups').last()[0]
         except Exception as e:
-            pass
+            need_cups = 20
+
+        if now_cups is None:
+            now_cups = 0
 
         try:
             id_note = request.POST['id_note']
@@ -411,11 +420,94 @@ def download_data(request):
 
 
 def statistics(request):
-    return render(request, 'entries/statistics.html')
+    month_ = request.POST.get('new_month')
+    date = datetime.now()
+    year_ = date.year
+    if not month_:
+        month_, month_n = date.month, date.strftime("%B")
+    else:
+        month_n = calendar.month_name[int(month_)]
 
+    def build_graphic(graph, goal_name=''):
+        if not goal_name:
+            data = Note.objects.annotate(month=ExtractMonth('time'), year=ExtractYear('time')).\
+                filter(month=month_, year=year_).annotate(day=TruncDay('time')).values('day').\
+                annotate(last_time=Max('time')).order_by('day', '-last_time')
+            days = [day['day'].strftime('%d') for day in data.values('day')]
+            fig = go.Figure()
 
+            if graph == 'water':
+                data = data.annotate(max_now_cups=Max('now_cups'), max_need_cups=Max('need_cups')) \
+                    .order_by('day')
 
+                need = [cup['max_need_cups'] for cup in data]
+                drinked = [cup['max_now_cups'] for cup in data]
 
+                fig.add_trace(go.Bar(x=days, y=drinked, name='Amount consumed'))
+                fig.add_trace(go.Scatter(x=days, y=need, name='Your daily intake'))
+                fig.update_layout(xaxis_title='Day', yaxis_title='Amount', title=f'Water consumption for {month_n} {year_}',
+                                  legend=dict(x=0, y=1))
 
+            elif graph == 'mood':
+                data = Note.objects.annotate(month=ExtractMonth('time'), year=ExtractYear('time')).\
+                    filter(month=month_, year=year_).annotate(day=TruncDay('time')).\
+                    annotate(latest_mood=Window(expression=Max('time'),
+                                                partition_by=[F('day')], order_by=F('time').desc(),),).\
+                    filter(time=F('latest_mood')).values('day', 'mood').order_by('day')
+
+                mood = [m['mood'] for m in data]
+                days = [d['day'].strftime('%d') for d in data]
+                fig.add_trace(go.Bar(x=days, y=mood, name='Your moods'))
+                fig.update_layout(xaxis_title='Day', yaxis_title='Mood', title=f'Mood tracker for {month_n} {year_}',
+                                  legend=dict(x=0, y=1))
+        else:
+            goal = Goal.objects.get(goal_name=goal_n)
+            need_to_do = [goal.monday, goal.tuesday, goal.wednesday, goal.thursday, goal.friday, goal.saturday,
+                          goal.sunday]
+
+            exec = GoalExec.objects.filter(goal_id=goal.goal_id).values_list('time')
+            goal_exec = []
+            for day in exec:
+                goal_exec.append(*day)
+            dates = [date for date in calendar.Calendar().itermonthdates(year_, int(month_)) if date.month == int(month_)]
+
+            days = [day.strftime("%Y-%m-%d") for day in dates]
+            need_to_do_days = [need_to_do[datetime.strptime(day, "%Y-%m-%d").date().weekday()] for day in days]
+
+            goal_exec_days = [any(datetime.strptime(item, '%Y-%m-%d').date() == day for item in goal_exec)
+                              for day in dates]
+
+            colors = []
+            for i in range(len(days)):
+                if goal_exec_days[i]:
+                    colors.append('green')
+                elif need_to_do_days[i]:
+                    colors.append('red')
+                else:
+                    colors.append('gray')
+
+            trace = go.Scatter(x=days, y=[1] * len(days), mode='markers', marker=dict(
+                size=25, color=colors, opacity=0.8, line=dict(width=1, color='black')))
+
+            layout = go.Layout(title=f'Goal "{goal_n}" Execution', xaxis=dict(title='Day'), yaxis=dict(
+                showticklabels=False, showgrid=False), hovermode='closest')
+
+            fig = go.Figure(data=[trace], layout=layout)
+
+        fig_bytes = fig.to_image(format='png', engine='kaleido')
+        image = base64.b64encode(fig_bytes).decode('utf-8')
+        url = 'data:image/png;base64,{}'.format(urllib.parse.quote(image))
+
+        return url
+
+    goals = Goal.objects.filter(username=request.user)
+    goal_n = request.POST.get('choose_goal')
+    if not goal_n:
+        goal_n = goals[0].goal_name
+    water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
+
+    return render(request, 'entries/statistics.html', {month_: 'month_', 'year_': year_, 'month_n': month_n,
+                                                       'water_url': water, 'mood_url': mood, 'goal_url': goal,
+                                                       'goals': goals})
 
 

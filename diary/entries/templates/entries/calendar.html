@@ -1,0 +1,30 @@
+<form action="" method="POST">
+    {% csrf_token %}
+    <select id="new_month" name="new_month">
+        <option value="{{ month_ }}" selected="selected">{% if month_n %} {{ month_n|title }} {% else %}
+            ---SELECT MONTH---{% endif %}</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+    </select>
+
+    {% if parameter == 'all_notes' %}
+        <select id="new_day" name="new_day" value="new_day">
+            <option value="" selected="selected">---SELECT DAY---</option>
+            {% for i in '0123456789101112131415161718192'|make_list %}
+                <option value="{{forloop.counter}}">{{forloop.counter}}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
+    <button type='submit'>Change</button>
+</form>

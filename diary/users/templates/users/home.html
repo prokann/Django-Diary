@@ -28,7 +28,7 @@
                 <div id="goals_exec">
                     <form name="form_container" class="form_container" action="{% url 'home' %}" method="POST">
                         {% csrf_token %}
-                        <p>Did you meet your goals?</p>
+                        <p>Did you execute your goals?</p>
                         {% for goal, today, done, id in goals_exec %}
                             {% checkbox_input goal done id %}
                             <label for="{{ goal }}">{{ goal }}</label>
@@ -97,7 +97,7 @@
                         <div id="danger" title="This is the zone of important decisions. Are you sure about the changes?">
                         <input type="checkbox" id="notifications" name="notifications" value="notifications" checked
                         title="With an empty square, messages will not come...">
-                        <label for="notifications">Notification is enabled</label>
+                        <label for="notifications">Enable notification</label>
 
                         <input type="checkbox" id="continuing" name="continuing" value="continuing" title="If you have
                         achieved your goal, click on the square. There will be no statistics or messages on it.">

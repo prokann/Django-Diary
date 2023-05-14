@@ -17,3 +17,5 @@ function readAll(iterate) {
         first_click = true;
         }
 }
+
+//statistics

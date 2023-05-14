@@ -1,83 +1,34 @@
 {% extends 'users/base.html' %}
+{% load template_tags %}
 
-{% block title %} Твій щоденник {% endblock %}
+
+{% load static %}
+<script src="{% static 'scripts.js' %}"></script>
+<link rel="stylesheet" href="{% static 'statistics.css' %}" type="text/css">
+
 
 {% block content %}
-<!--    <a href="{% url 'new_note' %}" >Додати запис</a>-->
-<!--    <form action="{% url 'new_note' %}">-->
-<!--        <input type="submit" value="Додати запис" />-->
-<!--    </form>-->
-<!--    <a href="{% url 'all_notes' %}" >Перегляд записів</a>-->
-    <br>
-    <br>
+    <h1>Statistics for {{ month_n }} {{ year_ }}</h1>
+    {% include 'entries/calendar.html' with parameter='statistics' %}
+    <h3>Water</h3>
+    <img src="{{ water_url }}">
+    <h3>Moods</h3>
+    <img src="{{ mood_url }}">
+    <h3>Goals</h3>
 
-    <div>
-        <h4>Перелік справ на сьогодні</h4>
-        <p>17.09.2022</p>
-        <p>Сам список</p>
-        <button>Змінити список</button>
-        <button>Створити новий</button>
-        <button>Подивитись усі</button>
-    </div>
-
-    <br>
-    <br>
-    <div>
-        <h4>Твоя ціль</h4>
-        <p>Сама ціль</p>
-        <p>На таку тривалість</p>
-        <button>Видалити ціль</button>
-        <button>Змінити тривалість</button>
-        <button>Додати нову</button>
-        <button>Повідомлення по часу</button>
-    </div>
-
-    <br>
-    <br>
-    <div>
-        <h4>Статистика досягнення цілі</h4>
-        <p>Календар</p>
-    </div>
-
-    <br>
-    <br>
-    <div>
-        <h4>Статистика води</h4>
-
-        <p>Календар</p>
-        <p>Норма: </p>
-        <button>10 чашок (списком)</button>
-    </div>
-
-    <br>
-    <br>
-    <div>
-        <h4>Статистика справ</h4>
-        <p>Справа - стільки разів</p>
-    </div>
-
-        <br>
-    <br>
-    <div>
-        <h4>Статистика настроїв та записів</h4>
-        <p>Календар</p>
-    </div>
-
-        <br>
-    <br>
-    <div>
-        <h4>Підбірка</h4>
-        <p>Додати нову</p>
-    </div>
-
-        <br>
-    <br>
-    <div>
-        <h4>Вішліст</h4>
-        <p>Додати новий</p>
-    </div>
-
-
-
+    <form id="form" name="form" class="form_container" action="{% url 'statistics' %}" method="POST">
+        {% csrf_token %}
+        <select name="choose_goal">
+            {% for goal in goals %}
+                <option value="{{ goal.goal_name }}">{% if goal %} {{ goal.goal_name }} {% else %} Select a goal
+                    {% endif %}</option>
+            {% endfor %}
+        </select>
+    <button type="submit">Choose</button>
+    </form>
+    <img src="{{ goal_url }}">
+    <p>Green color - done goal</p>
+    <p>Red - didn't achieve the goal, but should have</p>
+    <p>Grey - free day</p>
 
 {% endblock %}
