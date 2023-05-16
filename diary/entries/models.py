@@ -19,28 +19,29 @@ class Lists(models.Model):
     time = models.DateTimeField(auto_now=True)
 
 
-class ListsWork(models.Model):
+class Category(models.Model):
     list_id = models.IntegerField()
     case_name = models.CharField(max_length=25, default='SOME STRING')
     approved = models.BooleanField(default=False)
 
-
-class ListsHome(models.Model):
-    list_id = models.IntegerField()
-    case_name = models.CharField(max_length=25, default='SOME STRING')
-    approved = models.BooleanField(default=False)
+    class Meta:
+        abstract = True
 
 
-class ListsRest(models.Model):
-    list_id = models.IntegerField()
-    case_name = models.CharField(max_length=25, default='SOME STRING')
-    approved = models.BooleanField(default=False)
+class ListsWork(Category):
+    pass
 
 
-class ListsDevelopment(models.Model):
-    list_id = models.IntegerField()
-    case_name = models.CharField(max_length=25, default='SOME STRING')
-    approved = models.BooleanField(default=False)
+class ListsHome(Category):
+    pass
+
+
+class ListsRest(Category):
+    pass
+
+
+class ListsDevelopment(Category):
+    pass
 
 
 class Goal(models.Model):

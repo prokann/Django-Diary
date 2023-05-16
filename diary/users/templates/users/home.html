@@ -1,8 +1,8 @@
 {% extends 'users/base.html' %}
 {% load template_tags %}
 
-
 {% block content %}
+
 
 {% load static %}
 <script src="{% static 'scripts.js' %}"></script>
@@ -11,158 +11,19 @@
 
 <div class="container">
     <div class="row g-0">
-<!--        <div class="col-sm-6 col-md-8" id="header-text">-->
-<!--            <h1 id="header-h1">Diary</h1>-->
-<!--            <p id="header-paragraph">Your personal diary. Lorem Ipsum is<br> simply dummy text of the printing<br>-->
-<!--                  and typesetting industry. Lorem<br> Ipsum has been the industry's<br> standard dummy text ever-->
-<!--                  since<br> the 1500s, when an unknown printer.</p>-->
-<!--        </div>-->
-        {% if user.is_authenticated %}
-<!--            if nemae goals-->
-            <p>Do you have a goal you want to achieve?</p>
-            <p>Add it so we can remind you.</p>
-
-            <button><a href="new_goal">Add new goal</a></button> <!--unhide_div-->
-
-            {% if goals_exec %}
-                <div id="goals_exec">
-                    <form name="form_container" class="form_container" action="{% url 'home' %}" method="POST">
-                        {% csrf_token %}
-                        <p>Did you execute your goals?</p>
-                        {% for goal, today, done, id in goals_exec %}
-                            {% checkbox_input goal done id %}
-                            <label for="{{ goal }}">{{ goal }}</label>
-                            {% if today %} - today's goal!{% endif %}
-                            <br>
-                        {% endfor %}
-                        <button type="submit">Save</button>
-                    </form>
-                </div>
-            {% endif %}
-
-            {% if goal or unhide %}
-
-                <div id="myForm">
-
-                    <form id="form" name="form" class="form_container" action="{% url 'add_goal' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="goal_id" id="goal_id" value="{{ goal_id }}" readonly hidden>
-                        {% if unhide %}
-                            <h1 style="text-align: center;">New goal</h1>
-                        {% else %}
-                            <h1 style="text-align: center;">Editing a goal</h1>
-                        {% endif %}
-
-                        <label for="goal"><b>Goal</b></label><br>
-                        <input type="text" placeholder="Ціль" name="goal" id="goal" value="{{ goal }}"
-                                required>
-
-                        <h5>Receive messages</h5>
-                        <label><b>How often</b></label><br>
-
-                        <input type="radio" name="option" id="every_day" value="every_day" checked>
-                        <label for="every_day">Every day</label><br>
-
-                        <input type="radio" name="option" id="select_days" value="select_days">
-                        <label for="select_days">Select days</label><br>
-
-                        <div id="select">
-                            {% for day, mean in dict_days.items %}
-                                {% checkbox_input day mean %}
-                                <label for="{{ day }}">{{ day }}</label>
-                            {% endfor %}
-                        </div>
-
-                        <br>
-                        <label><b>At what time?</b></label><br>
-                        <select name="hour_category">
-                            <option value="{{ hour_category }}">{% if hour_category %} {{ hour_category }} {% else %}
-                                Select an hour{% endif %}</option>
-                            {% for i in 0|range:24 %}
-                                <option value="{{ forloop.counter }}">{{ i }} hours</option>
-                            {% endfor %}
-                        </select>
-                        <br>
-
-                        <label><b>At what minute?</b></label><br>
-                        <select name="minutes_category">
-                            <option value="{{ minutes_category }}">{% if minutes_category %} {{ minutes_category }}
-                                {% else %}Select a minute{% endif %}</option>
-                            {% for i in 0|range:60 %}
-                                <option value="{{ forloop.counter }}">{{ i }} minutes</option>
-                            {% endfor %}
-                        </select>
-
-                        <br>
-                        <div id="danger" title="This is the zone of important decisions. Are you sure about the changes?">
-                        <input type="checkbox" id="notifications" name="notifications" value="notifications" checked
-                        title="With an empty square, messages will not come...">
-                        <label for="notifications">Enable notification</label>
-
-                        <input type="checkbox" id="continuing" name="continuing" value="continuing" title="If you have
-                        achieved your goal, click on the square. There will be no statistics or messages on it.">
-                        <label for="continuing">Close goal</label>
-                        </div>
-
-                        <br>
-                        <p>*If you want to receive reminders about your goal in Telegram, check if you have written
-                            <a href='https://t.me/tviy_den_bot'>a bot.</a></p>
-
-                        <button type="submit">Save</button>
-                        {% if goal_id %}
-                            <button><a href="{% url 'delete_goal' %}?goal_id={{goal_id}}">Delete goal</a></button>
-                        {% endif %}
-                        <button><a href="{% url 'home' %}">Close</a></button>
-
-
-                    </form>
-                </div>
-            {% endif %}
-
-            {% if goals %}
-                <h3>Your goals</h3>
-                {% for goal in goals  %}
-
-                    <h4>{{ goal.goal_name }}</h4>
-
-
-                    {% if goal.monday or goal.tuesday or goal.wednesday or goal.thursday or goal.friday or goal.saturday or goal.sunday %}
-                        <p>The goal is relevant on:</p>
-                        {% if goal.monday %} <p>- Monday </p> {% endif %}
-                        {% if goal.tuesday %} <p>- Tuesday </p> {% endif %}
-                        {% if goal.wednesday %} <p>- Wednesday </p> {% endif %}
-                        {% if goal.thursday %} <p>- Thursday </p> {% endif %}
-                        {% if goal.friday %} <p>- Friday </p> {% endif %}
-                        {% if goal.saturday %} <p>- Saturday </p> {% endif %}
-                        {% if goal.sunday %} <p>- Sunday </p> {% endif %}
-
-                    {% else %}
-                        <p>No data available. We cannot keep statistics and send messages for you :(</p>
-                        <p>You can fix this in the edit panel.</p>
-                    {% endif %}
-
-
-                    {% if goal.notification_hour != 25 and goal.notification_minutes != 25 %}
-                        <p>Time for messages - {{ goal.notification_hour }} : {{ goal.notification_minutes }}</p>
-                    {% else %}
-                        <p>The time for messages is not specified, so they will not come.</p>
-                    {% endif %}
-
-                    <a href="{% url 'edit_goal' %}?goal_id={{goal.goal_id}}">Edit goal</a>
-
-                    <br>
-                    <br>
-                    <br>
-                {% endfor %}
-            {% endif %}
-
-        {% else %}
+        <div class="col-sm-6 col-md-8" id="header-text">
+            <h1 id="header-h1">Diary</h1>
+            <p id="header-paragraph">Your personal diary. Lorem Ipsum is<br> simply dummy text of the printing<br>
+                  and typesetting industry. Lorem<br> Ipsum has been the industry's<br> standard dummy text ever
+                  since<br> the 1500s, when an unknown printer.</p>
+        </div>
+        {% if not user.is_authenticated %}
             <a href='{% url "register_user" %}' class="btn" style="color: white; background-color: #fd5e14;"
                  type="submit" id="body-link-row">Register</a>
 
             <div class="col-6 col-md-4" id="header-image"><img src="" alt=""></div>
+        {% else %}
         {% endif %}
-
     </div>
 </div>
 

@@ -2,11 +2,9 @@
 
 {% load template_tags %}
 
-{% block title %} New note {% endblock %}
-
-{% block content %}
 
 {% load static %}
+{% block content %}
 <script src="{% static 'scripts.js' %}"></script>
 
 <a href="{% url 'download_data' %}">Download all notices</a>

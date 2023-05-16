@@ -1,6 +1,6 @@
-django
-django-crispy-forms
-pyTelegramBotAPI
-requests
-plotly
-kaleido
+django==4.2.1
+django-crispy-forms==1.14.0
+pyTelegramBotAPI==4.11.0
+requests==2.30.0
+plotly==5.14.1
+kaleido==0.2.1
