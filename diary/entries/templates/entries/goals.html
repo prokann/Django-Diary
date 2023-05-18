@@ -3,7 +3,6 @@
 
 
 {% block content %}
-
 {% load static %}
 <script src="{% static 'scripts.js' %}"></script>
 <link rel="stylesheet" href="{% static 'main.css' %}">
@@ -16,11 +15,11 @@
         <p>Do you have a goal you want to achieve?</p>
         <p>Add it so we can remind you.</p>
 
-        <button><a href="new_goal">Add new goal</a></button> <!--unhide_div-->
+        <button><a href="{% url 'unhide_div' %}">Add new goal</a></button> <!--unhide_div-->
 
         {% if goals_exec %}
             <div id="goals_exec">
-                <form name="form_container" class="form_container" action="{% url 'home' %}" method="POST">
+                <form name="form_container" class="form_container" action="{% url 'goals' %}" method="POST">
                     {% csrf_token %}
                     <p>Did you execute your goals?</p>
                     {% for goal, today, done, id in goals_exec %}

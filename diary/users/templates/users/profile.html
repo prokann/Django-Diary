@@ -1,22 +1,40 @@
 {% extends 'users/base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'register.css' %}">
+{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h2>{{ user.username }}</h2>
-        <h3>{{ user.email }}</h3>
 
+    <div class="container">
         <form action="{% url 'edit_email' %}" method="POST">
             {% csrf_token %}
-            <label>Edit email: </label>
-            <input type="text" id="email" name="email" maxlength="100" value="Input email">
-            <button type="submit">Зберігти</button>
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">{{ user.username }}</legend>
+<!--        <h2>{{ user.username }}</h2>-->
+                    <h3>Your email - {{ user.email }}</h3>
+
+                    <div class="edit-email">
+                        <label>If you want to edit email: </label>
+                        <input type="text" id="email" name="email" maxlength="100" value="Input email">
+                        <button class="nav-link nav-btn small-button" type="submit">Save</button>
+                    </div>
+            </fieldset>
         </form>
 
-        <a href="{% url 'logout' %}" type="submit "> Logout </a>
-        <br>
-        <a href="{% url 'remove_user' %}">Delete account</a>
-
+        <div class="row g-0">
+<!--            <div class="sign-in">-->
+                <div class="col frame-left">
+                    <a class="nav-link nav-btn small-button" href="{% url 'logout' %}" type="submit ">Logout</a>
+                </div>
+                <div class="col frame-right">
+                    <a class="nav-link nav-btn small-button" href="{% url 'remove_user' %}">Delete account</a>
+                </div>
+<!--            </div>-->
+        </div>
     </div>
+
 {% endblock %}

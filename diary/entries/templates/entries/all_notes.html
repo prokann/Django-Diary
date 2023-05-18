@@ -1,10 +1,9 @@
 {% extends 'users/base.html' %}
-
 {% load template_tags %}
 
 
-{% load static %}
 {% block content %}
+{% load static %}
 <script src="{% static 'scripts.js' %}"></script>
 
 <a href="{% url 'download_data' %}">Download all notices</a>

@@ -1,30 +1,73 @@
 {% extends 'users/base.html' %}
 {% load template_tags %}
+{% load static %}
+
 
 {% block content %}
 
-
-{% load static %}
-<script src="{% static 'scripts.js' %}"></script>
-<link rel="stylesheet" href="{% static 'main.css' %}">
-<link rel="stylesheet" href="{% static 'popup.css' %}">
-
-<div class="container">
-    <div class="row g-0">
-        <div class="col-sm-6 col-md-8" id="header-text">
-            <h1 id="header-h1">Diary</h1>
-            <p id="header-paragraph">Your personal diary. Lorem Ipsum is<br> simply dummy text of the printing<br>
-                  and typesetting industry. Lorem<br> Ipsum has been the industry's<br> standard dummy text ever
-                  since<br> the 1500s, when an unknown printer.</p>
+    <div class="background">
+        <div class="header-logo">
+            <img src="{% static 'images/' %}logo_192.png">
+            <h1>Your Day</h1>
         </div>
-        {% if not user.is_authenticated %}
-            <a href='{% url "register_user" %}' class="btn" style="color: white; background-color: #fd5e14;"
-                 type="submit" id="body-link-row">Register</a>
+        <div class="row g-0">
+            <div class="col-sm-6 col-md-8" id="header-text">
+                <p class="header-paragraph">It's your personal diary.</p>
+                <p class="header-paragraph">In the 21st century, people are so busy working and increasing their
+                    productivity that they don't have time to stop and think.</p>
+                <p class="header-paragraph">But it is very nice when we do not waste time and our work goes quickly and smoothly.</p>
+                <p class="header-paragraph">The easiest thing to do for this is to write down your thoughts for some time. Thus, it is possible to follow what
+                worries us the most, which areas of life need to be paid more attention to.</p>
+            </div>
+            <div class="col-sm-6 col-md-4" id="header-image"><img src="{% static 'images/' %}pen.png" alt=""></div>
+            {% if not user.is_authenticated %}
+                <a href='{% url "register_user" %}' class="btn body-link-row" type="submit">Register</a>
+                <a href='{% url "login" %}' class="btn body-link-row" type="submit">Sign In</a>
+            {% endif %}
+        </div>
+    </div>
 
-            <div class="col-6 col-md-4" id="header-image"><img src="" alt=""></div>
-        {% else %}
-        {% endif %}
+    <div class="row">
+        <h1>What can you do?</h1>
+
+        <div class="col-lg-6">
+          <div class="frame frame-left">
+            <div class="frame-content">
+              <h2>Record thoughts.</h2>
+              <p>Create as many entries as you want and about whatever you want!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="frame frame-right">
+            <div class="frame-content">
+              <h2>Create to-do lists.</h2>
+              <p>Check out what you've done and keep track of what's left.</p>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="frame frame-left">
+            <div class="frame-content">
+              <h2>Add goals.</h2>
+              <p>Set yourself a task for a certain period of time and receive notifications.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="frame frame-right">
+            <div class="frame-content">
+              <h2>View your progress.</h2>
+              <p>Follow the statistics of the goal, your mood and the amount of water you drink.</p>
+            </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
 
 {% endblock content %}

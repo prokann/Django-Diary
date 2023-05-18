@@ -1,0 +1,43 @@
+legend {
+    margin-top: 40px;
+}
+.border-bottom {
+    border-bottom: 1px solid #212529!important;
+    color: #212529!important;
+    font-family: 'Dancing Script', cursive;
+    font-size: 30px;
+    text-align: center;
+}
+.text-muted.ml-3, label {
+    color: #212529!important;
+}
+div.form-group button.btn.body-link-row {
+    width: 100%;
+    margin-top: 20px;
+}
+.sign-in {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 20px;
+}
+.sign-in a:hover {
+    box-shadow: 0 0 10px #ff8248, 0 0 4px #ff8248,0 0 80px #ff8248;
+}
+.sign-in img {
+    margin-top: 20px;
+}
+h3 {
+    text-align: center;
+}
+.edit-email {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+.small-button {
+    color: black;
+    display: -webkit-inline-box!important;
+    background-color: black;
+    margin: 10px;
+    width: max-content;
+}

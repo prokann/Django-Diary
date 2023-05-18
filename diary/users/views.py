@@ -53,11 +53,10 @@ def remove_user(request):
         if rem is not None:
             rem.delete()
             messages.success(request, f'Bye, {request.user}. Your account was deleted.')
-            return render(request, 'users/goals.html')
+            return render(request, 'users/home.html')
         else:
-            pass
-               # Send some error messgae
+            return render(request, 'users/profile.html')
     else:
         form = RemoveUser()
     context = {'form': form}
-    return render(request, 'users/goals.html', context)
+    return render(request, 'users/home.html', context)

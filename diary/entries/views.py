@@ -10,6 +10,7 @@ import urllib, base64
 import plotly.graph_objs as go
 from django.http import HttpResponse
 from datetime import datetime
+from django.contrib import messages
 
 
 # standard funcs
@@ -510,7 +511,6 @@ def statistics(request):
                                                        'goals': goals})
 
 
-
 def unhide_div(request): #new_goal
     return render(request, 'entries/goals.html', {'unhide': True, 'dict_days': {'monday': False, 'tuesday': False,
                                                                              'wednesday': False, 'thursday': False,
@@ -524,7 +524,7 @@ def edit_goal(request):
     item = Goal.objects.get(goal_id=int(goal_id))
     if item.username != f'{request.user}':
         return HttpResponse('Something went wrong. Try again.')
-    return render(request, 'users/goals.html', {'goal': item.goal_name, 'hour_category': item.notification_hour,
+    return render(request, 'entriesf/goals.html', {'goal': item.goal_name, 'hour_category': item.notification_hour,
                                                'minutes_category': item.notification_minutes, 'goal_id': int(goal_id),
                                                'notifications': item.notifications, 'continuing': item.continuing,
                                                'dict_days': {'monday': item.monday, 'tuesday': item.tuesday,
