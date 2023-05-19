@@ -54,19 +54,19 @@
         <ul class="navbar-nav">
           {% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link nav-btn" href="{% url 'goals' %}">Goals</a>
+              <a class="button nav-link nav-btn" href="{% url 'goals' %}" onclick="setActiveButton(this); location.reload();">Goals</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link nav-btn" href="{% url 'all_notes' %}">Notes</a>
+              <a class="button nav-link nav-btn" href="{% url 'all_notes' %}" onclick="setActiveButton(this); location.reload();">Notes</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link nav-btn" href="{% url 'new_note' %}">New note</a>
+              <a class="button nav-link nav-btn" href="{% url 'new_note' %}" onclick="setActiveButton(this); location.reload();">New note</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link nav-btn" href="{% url 'statistics' %}">Statistics</a>
+              <a class="button nav-link nav-btn" href="{% url 'statistics' %}" onclick="setActiveButton(this); location.reload();">Statistics</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link nav-btn" href="{% url 'profile' %}">Profile</a>
+              <a class="button nav-link nav-btn" href="{% url 'profile' %}" onclick="setActiveButton(this); location.reload();">Profile</a>
             </li>
 
           {% else %}

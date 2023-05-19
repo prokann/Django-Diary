@@ -119,6 +119,7 @@ a.logo:hover {
     overflow: hidden;
     transition: 0.2s;
     margin-top: 3px;
+    margin-bottom: 2px;
 }
 .body-link-row:hover {
     font-size: 15px;
@@ -195,6 +196,12 @@ a.logo:hover {
 .frame-content {
     height: -webkit-fill-available;
 }
+div.col.frame-left a.nav-link.nav-btn.small-button, div.col.frame-right a.nav-link.nav-btn.small-button {
+    width: 160px;
+    text-align: center;
+    /* align-items: center; */
+    /* justify-content: center; */
+}
 footer {
     background-color: #212529;
     margin-top: 40px;
@@ -220,4 +227,22 @@ footer .nav-btn {
 }
 .full-width-column a:hover {
     color: black;
+}
+.alert-success {
+    color: #212529!important;
+    background-color: white!important;
+    margin-top: 10px!important;
+}/*
+.active {
+    background-color: black!important;
+}*/
+.h-bottom {
+    border-bottom: 1px solid #212529!important;
+    color: #212529!important;
+    font-family: 'Dancing Script', cursive;
+    font-size: 30px;
+    text-align: center;
+}
+a {
+    text-decoration: none!important;
 }

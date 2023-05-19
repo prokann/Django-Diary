@@ -3,32 +3,47 @@
 
 
 {% load static %}
-<script src="{% static 'scripts.js' %}"></script>
-<link rel="stylesheet" href="{% static 'statistics.css' %}" type="text/css">
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'statistics.css' %}" type="text/css">
+{% endblock %}
 
 
 {% block content %}
-    <h1>Statistics for {{ month_n }} {{ year_ }}</h1>
-    {% include 'entries/calendar.html' with parameter='statistics' %}
-    <h3>Water</h3>
-    <img src="{{ water_url }}">
-    <h3>Moods</h3>
-    <img src="{{ mood_url }}">
-    <h3>Goals</h3>
+    {% if user.is_authenticated %}
+        <h1>Statistics for {{ month_n }} {{ year_ }}</h1>
+        {% include 'entries/calendar.html' with parameter='statistics' %}
 
-    <form id="form" name="form" class="form_container" action="{% url 'statistics' %}" method="POST">
-        {% csrf_token %}
-        <select name="choose_goal">
-            {% for goal in goals %}
-                <option value="{{ goal.goal_name }}">{% if goal %} {{ goal.goal_name }} {% else %} Select a goal
-                    {% endif %}</option>
-            {% endfor %}
-        </select>
-    <button type="submit">Choose</button>
-    </form>
-    <img src="{{ goal_url }}">
-    <p>Green color - done goal</p>
-    <p>Red - didn't achieve the goal, but should have</p>
-    <p>Grey - free day</p>
+        {% if water_url %}
+            <h3>Water</h3>
+            <img src="{{ water_url }}">
+        {% endif %}
+        {% if mood_url %}
+            <h3>Moods</h3>
+            <img src="{{ mood_url }}">
+        {% endif %}
 
+        {% if goals %}
+            <h3>Goals</h3>
+            <form id="form" name="form" class="form_container" action="{% url 'statistics' %}" method="POST">
+                {% csrf_token %}
+                <select name="choose_goal">
+                    {% for goal in goals %}
+                        <option value="{{ goal.goal_name }}">{% if goal %} {{ goal.goal_name }} {% else %} Select a goal
+                            {% endif %}</option>
+                    {% endfor %}
+                </select>
+            <button type="submit">Choose</button>
+            </form>
+            {% if goal_url %}
+                <img src="{{ goal_url }}">
+                <p>Green color - done goal</p>
+                <p>Red - didn't achieve the goal, but should have</p>
+                <p>Grey - free day</p>
+            {% endif %}
+        {% endif %}
+
+        {% if not goal_url and not mood_url and not water_url %}
+            <h3>To display statistics, you need to fill in the data. Now we don't have them.</h3>
+        {% endif %}
+    { endif %}
 {% endblock %}

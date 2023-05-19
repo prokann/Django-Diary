@@ -1,139 +1,161 @@
 {% extends 'users/base.html' %}
 {% load template_tags %}
+{% load static %}
 
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'new_note.css' %}" type="text/css">
+{% endblock %}
 
 {% block content %}
-{% load static %}
-<script src="{% static 'scripts.js' %}"></script>
+    {% if user.is_authenticated %}
 
-<a href="{% url 'download_data' %}">Download all notices</a>
-<a href="{% url 'new_note' %}">Add new note or list</a>
+        <a href="{% url 'download_data' %}">Download all notices</a>
+        <a href="{% url 'new_note' %}">Add new note or list</a>
 
-<h1>Notes and lists for {% if day_ %} {{ day_ }} {% endif %} {{ month_n }} {{ year_ }}</h1>
-{{ calendar_|safe }}
-<br>
-{% include 'entries/calendar.html'  with parameter='all_notes'  %}
-
-{% if notes %}
-    <h3>Your notes</h3>
-        {% for id_note, u, t, m, n, e, w, iterate in notes reversed  %}
-            <input type="hidden" name="id_note" id="id_note" value="{{ id_note }}" readonly hidden>
-
-            <br>
-            <h4 style="color: blue;">Note created {{ t }}</h4>
-            <div id="short_text{{iterate}}">
-                <br>Your mood: {{ m }}
-                <br>Your note: {{ n|truncatechars:200 }}
-            </div>
-
-            <button id="show_full{{iterate}}" onclick="readAll({{iterate}})">Show more</button>
-
-            <div id="full_text{{iterate}}" style="display: none;">
-                Your username: {{ u }}
-                <br>Your mood:
-                <img class="mood" src="{% static 'images/' %}{{ m }}.png" title="{{ m }}">
-
-                <br>Your note:<br>{{ n|linebreaksbr }}
-                <br>Your need_cups: {{ e }}
-                <br>Your now_cups: {{ w }}
-                <br>
-            </div>
-
-            <a href="{% url 'delete_note' %}?id_note={{id_note}}">Delete note</a>
-            <a href="{% url 'edit_note' %}?id_note={{id_note}}">Edit note</a>
-
+        <h1>Notes and lists for {% if day_ %} {{ day_ }} {% endif %} {{ month_n }} {{ year_ }}</h1>
+        {{ calendar_|safe }}
         <br>
-    {% endfor %}
-{% else %}
-    <p>These dates have no records</p>
-{% endif %}
-<br>
+        {% include 'entries/calendar.html'  with parameter='all_notes'  %}
 
-<form action="{% url 'will_did_case' %}?day_month={{ day_ }}, {{ month_n }}" method="POST">
-    {% csrf_token %}
+        {% if notes %}
+            <h3>Your notes</h3>
+                {% for id_note, u, t, m, n, e, w, iterate in notes reversed  %}
+                    <input type="hidden" name="id_note" id="id_note" value="{{ id_note }}" readonly hidden>
 
-    {% if lists %}
-        <h3>Your lists</h3>
-        {% for id_list, name_list, time_list, wc, wa, hc, ha, rc, ra, dc, da in lists reversed %}
-            <h4 style="color: blue;">{{ name_list }}</h4>
-            <h5 style="color: blue;">List created {{ time_list }}</h5>
-            <input type="hidden" name="id_list" id="id_list" value="{{ id_list }}" readonly hidden>
-
-            {% if wc %}
-            <p>Work category</p>
-                {% for case, check in wc|zip:wa %}
-                    {% if check|unpack %}
-                        <input type="checkbox" id="work_ch" name="boxes[]" checked="checked"
-                               value="work, {{ case|unpack}}, {{id_list }}">
-                        <label for="work_ch">{{ case|unpack }}</label>
-                    {% else %}
-                        <input type="checkbox" name="boxes[]" value="work, {{ case|unpack}}, {{id_list }}">
-                        <label for="work_ch">{{ case|unpack }}</label>
-
-                    {% endif %}
                     <br>
-                {% endfor %}
-            {% endif %}
+                    <h4 style="color: blue;">Note created {{ t }}</h4>
+                    <div id="short_text{{iterate}}">
+                        <br>Your mood: {{ m }}
+                        <br>Your note: {{ n|truncatechars:200 }}
+                    </div>
 
-            {% if hc %}
-            <p>Home category</p>
-                {% for case, check in hc|zip:ha %}
-                    {% if check|unpack %}
-                        <input type="checkbox" id="home_ch" name="boxes[]" checked="checked"
-                               value="home, {{ case|unpack}}, {{id_list }}">
-                        <label for="home_ch">{{ case|unpack }}</label>
-                    {% else %}
-                        <input type="checkbox" name="boxes[]" value="home, {{ case|unpack}}, {{id_list }}">
-                        <label for="home_ch">{{ case|unpack }}</label>
+                    <button id="show_full{{iterate}}" onclick="readAll({{iterate}})">Show more</button>
 
+                    <div id="full_text{{iterate}}" style="display: none;">
+                        Your username: {{ u }}
+                        <br>Your mood:
+                        <img class="mood" src="{% static 'images/' %}{{ m }}.png" title="{{ m }}">
+
+                        <br>Your note:<br>{{ n|linebreaksbr }}
+                        <br>Your need_cups: {{ e }}
+                        <br>Your now_cups: {{ w }}
+                        <br>
+                    </div>
+
+                    <a href="{% url 'delete_note' %}?id_note={{id_note}}">Delete note</a>
+                    <a href="{% url 'edit_note' %}?id_note={{id_note}}">Edit note</a>
+
+                <br>
+            {% endfor %}
+        {% else %}
+            <p>These dates have no records</p>
+        {% endif %}
+        <br>
+
+        <form action="{% url 'will_did_case' %}?day_month={{ day_ }}, {{ month_n }}" method="POST">
+            {% csrf_token %}
+
+            {% if lists %}
+                <h3>Your lists</h3>
+                {% for id_list, name_list, time_list, wc, wa, hc, ha, rc, ra, dc, da in lists reversed %}
+                    <h4 style="color: blue;">{{ name_list }}</h4>
+                    <h5 style="color: blue;">List created {{ time_list }}</h5>
+                    <input type="hidden" name="id_list" id="id_list" value="{{ id_list }}" readonly hidden>
+
+                    {% if wc %}
+                    <p>Work category</p>
+                        {% for case, check in wc|zip:wa %}
+                            {% if check|unpack %}
+                                <input type="checkbox" id="work_ch" name="boxes[]" checked="checked"
+                                       value="work, {{ case|unpack}}, {{id_list }}">
+                                <label for="work_ch">{{ case|unpack }}</label>
+                            {% else %}
+                                <input type="checkbox" name="boxes[]" value="work, {{ case|unpack}}, {{id_list }}">
+                                <label for="work_ch">{{ case|unpack }}</label>
+
+                            {% endif %}
+                            <br>
+                        {% endfor %}
                     {% endif %}
-                    <br>
-                {% endfor %}
-            {% endif %}
 
-            {% if rc %}
-            <p>Rest category</p>
-                {% for case, check in rc|zip:ra %}
-                    {% if check|unpack %}
-                        <input type="checkbox" id="rest_ch" name="boxes[]" checked="checked"
-                               value="rest, {{ case|unpack}}, {{id_list }}">
-                        <label for="rest_ch">{{ case|unpack }}</label>
-                    {% else %}
-                        <input type="checkbox" name="boxes[]" value="rest, {{ case|unpack}}, {{id_list }}">
-                        <label for="rest_ch">{{ case|unpack }}</label>
+                    {% if hc %}
+                    <p>Home category</p>
+                        {% for case, check in hc|zip:ha %}
+                            {% if check|unpack %}
+                                <input type="checkbox" id="home_ch" name="boxes[]" checked="checked"
+                                       value="home, {{ case|unpack}}, {{id_list }}">
+                                <label for="home_ch">{{ case|unpack }}</label>
+                            {% else %}
+                                <input type="checkbox" name="boxes[]" value="home, {{ case|unpack}}, {{id_list }}">
+                                <label for="home_ch">{{ case|unpack }}</label>
 
+                            {% endif %}
+                            <br>
+                        {% endfor %}
                     {% endif %}
-                    <br>
-                {% endfor %}
-            {% endif %}
 
-            {% if dc %}
-            <p>Development category</p>
-                {% for case, check in dc|zip:da %}
-                    {% if check|unpack %}
-                        <input type="checkbox" id="development_ch" name="boxes[]" checked="checked"
-                               value="development, {{ case|unpack}}, {{id_list }}">
-                        <label for="development_ch">{{ case|unpack }}</label>
-                    {% else %}
-                        <input type="checkbox" name="boxes[]" value="development, {{ case|unpack}}, {{id_list }}">
-                        <label for="development_ch">{{ case|unpack }}</label>
+                    {% if rc %}
+                    <p>Rest category</p>
+                        {% for case, check in rc|zip:ra %}
+                            {% if check|unpack %}
+                                <input type="checkbox" id="rest_ch" name="boxes[]" checked="checked"
+                                       value="rest, {{ case|unpack}}, {{id_list }}">
+                                <label for="rest_ch">{{ case|unpack }}</label>
+                            {% else %}
+                                <input type="checkbox" name="boxes[]" value="rest, {{ case|unpack}}, {{id_list }}">
+                                <label for="rest_ch">{{ case|unpack }}</label>
 
+                            {% endif %}
+                            <br>
+                        {% endfor %}
                     {% endif %}
-                    <br>
+
+                    {% if dc %}
+                    <p>Development category</p>
+                        {% for case, check in dc|zip:da %}
+                            {% if check|unpack %}
+                                <input type="checkbox" id="development_ch" name="boxes[]" checked="checked"
+                                       value="development, {{ case|unpack}}, {{id_list }}">
+                                <label for="development_ch">{{ case|unpack }}</label>
+                            {% else %}
+                                <input type="checkbox" name="boxes[]" value="development, {{ case|unpack}}, {{id_list }}">
+                                <label for="development_ch">{{ case|unpack }}</label>
+
+                            {% endif %}
+                            <br>
+                        {% endfor %}
+                    {% endif %}
+                    <button type='submit'  title="It is mandatory if you changed the execution of cases">Save changes</button>
+
+                    <a href="{% url 'delete_list' %}?id_list={{id_list}}">Delete list</a>
+                    <a href="{% url 'save_list' %}?id_list={{id_list}}">Edit list</a>
+
+
                 {% endfor %}
+
+            {% else %}
+                <p>These dates have no lists</p>
             {% endif %}
-            <button type='submit'  title="It is mandatory if you changed the execution of cases">Save changes</button>
-
-            <a href="{% url 'delete_list' %}?id_list={{id_list}}">Delete list</a>
-            <a href="{% url 'save_list' %}?id_list={{id_list}}">Edit list</a>
-
-
-        {% endfor %}
-
-    {% else %}
-        <p>These dates have no lists</p>
+        </form>
     {% endif %}
-</form>
 
+    <script>
+        var first_click = true;
+
+        function readAll(iterate) {
+            let full = 'full_text'.concat(iterate);
+            let short = "short_text".concat(iterate);
+            if (first_click) {
+                document.getElementById(full).style.display = ""
+                document.getElementById(short).style.display = "none"
+                first_click = false;}
+            else {
+                document.getElementById(full).style.display = "none"
+                document.getElementById(short).style.display = ""
+                first_click = true;
+                }
+        }
+    </script>
 {% endblock %}
 

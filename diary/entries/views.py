@@ -431,7 +431,7 @@ def statistics(request):
     def build_graphic(graph, goal_name=''):
         if not goal_name:
             data = Note.objects.annotate(month=ExtractMonth('time'), year=ExtractYear('time')).\
-                filter(month=month_, year=year_).annotate(day=TruncDay('time')).values('day').\
+                filter(username=request.user, month=month_, year=year_).annotate(day=TruncDay('time')).values('day').\
                 annotate(last_time=Max('time')).order_by('day', '-last_time')
             days = [day['day'].strftime('%d') for day in data.values('day')]
             fig = go.Figure()
@@ -445,12 +445,12 @@ def statistics(request):
 
                 fig.add_trace(go.Bar(x=days, y=drinked, name='Amount consumed'))
                 fig.add_trace(go.Scatter(x=days, y=need, name='Your daily intake'))
-                fig.update_layout(xaxis_title='Day', yaxis_title='Amount', title=f'Water consumption for {month_n} {year_}',
-                                  legend=dict(x=0, y=1))
+                fig.update_layout(xaxis_title='Day', yaxis_title='Amount', title=f'Water consumption for {month_n} '
+                                                                                 f'{year_}', legend=dict(x=0, y=1))
 
             elif graph == 'mood':
                 data = Note.objects.annotate(month=ExtractMonth('time'), year=ExtractYear('time')).\
-                    filter(month=month_, year=year_).annotate(day=TruncDay('time')).\
+                    filter(username=request.user, month=month_, year=year_).annotate(day=TruncDay('time')).\
                     annotate(latest_mood=Window(expression=Max('time'),
                                                 partition_by=[F('day')], order_by=F('time').desc(),),).\
                     filter(time=F('latest_mood')).values('day', 'mood').order_by('day')
@@ -461,7 +461,7 @@ def statistics(request):
                 fig.update_layout(xaxis_title='Day', yaxis_title='Mood', title=f'Mood tracker for {month_n} {year_}',
                                   legend=dict(x=0, y=1))
         else:
-            goal = Goal.objects.get(goal_name=goal_n)
+            goal = Goal.objects.get(goal_name=goal_n, username=request.user)
             need_to_do = [goal.monday, goal.tuesday, goal.wednesday, goal.thursday, goal.friday, goal.saturday,
                           goal.sunday]
 
@@ -494,28 +494,33 @@ def statistics(request):
 
             fig = go.Figure(data=[trace], layout=layout)
 
-        fig_bytes = fig.to_image(format='png', engine='kaleido')
-        image = base64.b64encode(fig_bytes).decode('utf-8')
-        url = 'data:image/png;base64,{}'.format(urllib.parse.quote(image))
-
+        if fig.data[0]['x'] and fig.data[0]['y'] and fig.data[1]['x'] and fig.data[1]['y']:
+            fig_bytes = fig.to_image(format='png', engine='kaleido')
+            image = base64.b64encode(fig_bytes).decode('utf-8')
+            url = 'data:image/png;base64,{}'.format(urllib.parse.quote(image))
+        else:
+            url = False
         return url
 
     goals = Goal.objects.filter(username=request.user)
     goal_n = request.POST.get('choose_goal')
     if not goal_n:
-        goal_n = goals[0].goal_name
-    water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
+        try:
+            goal_n = goals[0].goal_name
+            water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
+        except Exception as e:
+            water, mood, goal = build_graphic('water'), build_graphic('mood'), False
 
-    return render(request, 'entries/statistics.html', {month_: 'month_', 'year_': year_, 'month_n': month_n,
+    return render(request, 'entries/statistics.html', {'month_': month_, 'year_': year_, 'month_n': month_n,
                                                        'water_url': water, 'mood_url': mood, 'goal_url': goal,
                                                        'goals': goals})
 
 
-def unhide_div(request): #new_goal
+def unhide_div(request): # new_goal
     return render(request, 'entries/goals.html', {'unhide': True, 'dict_days': {'monday': False, 'tuesday': False,
-                                                                             'wednesday': False, 'thursday': False,
-                                                                             'friday': False, 'saturday': False,
-                                                                             'sunday': False}})
+                                                                                'wednesday': False, 'thursday': False,
+                                                                                'friday': False, 'saturday': False,
+                                                                                'sunday': False}})
 
 
 def edit_goal(request):
@@ -524,7 +529,7 @@ def edit_goal(request):
     item = Goal.objects.get(goal_id=int(goal_id))
     if item.username != f'{request.user}':
         return HttpResponse('Something went wrong. Try again.')
-    return render(request, 'entriesf/goals.html', {'goal': item.goal_name, 'hour_category': item.notification_hour,
+    return render(request, 'entries/goals.html', {'goal': item.goal_name, 'hour_category': item.notification_hour,
                                                'minutes_category': item.notification_minutes, 'goal_id': int(goal_id),
                                                'notifications': item.notifications, 'continuing': item.continuing,
                                                'dict_days': {'monday': item.monday, 'tuesday': item.tuesday,

@@ -1,0 +1,96 @@
+#danger {
+    opacity: 50%;
+}
+#select {
+  display: none;
+}
+#select_days:checked ~ #select {
+    display: block;
+}
+#form {
+    padding: 10px;
+}
+#form button a {
+    text-decoration: none;
+    color: #212529;
+    font-weight: 400;
+}
+#form a {
+    color: #d9bc6e;
+    font-weight: bold;
+}
+#new_goal {
+    width: 25%;
+}
+.open_button {
+    width: 15%;
+    border-radius: 7px;
+}
+.form-container {
+    background-color: #212529;
+    padding: 5px;
+    color: #d9bc6e;
+    border-radius: 10px;
+    margin-top: 40px!important;
+    font-size: 18px;
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-bottom: 30px;
+    position: relative;
+}
+.form-container input[type=text]:valid:required, .form-container input[type=password] {
+    width: 100%;
+}
+.form-container input[type=text]:invalid:required, .form-container input[type=password] {
+    width: 100%;
+}
+ .form-container input[type=text]:focus, .form-container input[type=password]:focus {
+    background-color: #ddd;
+}
+.form-container .cancel {
+    background-color: white;
+    margin-top: 10px;
+}
+ .form-container .btn:hover, .open-button:hover {
+    opacity: 1;
+}
+.form-container p {
+    text-align: center;
+}
+.form-container button {
+    justify-content: center!important;
+    align-items: center!important;
+    text-align: center;
+    color: #212529!important;
+    padding: 0.5rem 1rem;
+    width: -webkit-fill-available;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin: 10px 10% 10px 10%;
+    background-color: #d9bc6e;
+}
+.nav-link.nav-btn a {
+    text-decoration: none;
+    color: #212529;
+    font-size: 18px;
+}
+.name {
+    font-family: 'Dancing Script', cursive;
+    color: #d9bc6e;
+    text-align: center;
+    padding: 5px;
+}
+h3.h-bottom {
+    font-size: 50px;
+    margin-bottom: 40px;
+}
+.center {
+    text-align: center;
+    border: 1px solid #000;
+    margin-bottom: 10px;
+}
+.all-width {
+    width: -webkit-fill-available;
+    margin: 10px;
+    background-color: #212529;
+}

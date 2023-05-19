@@ -1,165 +1,163 @@
 {% extends 'users/base.html' %}
-
 {% load static %}
 {% load template_tags %}
-{% block title %} New note {% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'new_note.css' %}" type="text/css">
+{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'new_note.css' %}" type="text/css">
+    {% if user.is_authenticated %}
 
+        <form action="{% url 'save_list' %}?id_list={{ id_list }}" method="POST">
+            {% csrf_token %}
 
-<form action="{% url 'save_list' %}?id_list={{ id_list }}" method="POST">
-    {% csrf_token %}
+            <h1>List of cases</h1>
 
-    <h1>List of cases</h1>
+            <br>
+            <input type="text" id="name_list" name="name_list" maxlength="25" {% if name_list %} value="{{ name_list }}"
+                   {% else %}  value="Name of the list" {% endif %}>
 
-    <br>
-    <input type="text" id="name_list" name="name_list" maxlength="25" {% if name_list %} value="{{ name_list }}"
-           {% else %}  value="Name of the list" {% endif %}>
+            <select name="categories" id="cases_categories">
+                <option value="{{ category }}">{% if category %} {{ category|title }} {% else %}Select the category of your case
+                    {% endif %}</option>
+                <option value="work">Work</option>
+                <option value="home">House</option>
+                <option value="rest">Rest</option>
+                <option value="development">Development</option>
+            </select>
+            <br>
+            <input type="text" id="case" name="case" maxlength="100" value="{{ case }}">
+            <button type="submit">Add case</button>
 
-    <select name="categories" id="cases_categories">
-        <option value="{{ category }}">{% if category %} {{ category|title }} {% else %}Select the category of your case
-            {% endif %}</option>
-        <option value="work">Work</option>
-        <option value="home">House</option>
-        <option value="rest">Rest</option>
-        <option value="development">Development</option>
-    </select>
-    <br>
-    <input type="text" id="case" name="case" maxlength="100" value="{{ case }}">
-    <button type="submit">Add case</button>
+            <input id="id_list" name="id_list" value="{{ id_list }}" readonly hidden>
 
-    <input id="id_list" name="id_list" value="{{ id_list }}" readonly hidden>
+            {% if list_name %}
+                <h3 style="color: blue;">Your list - {{ list_name }}</h3>
+            {% endif %}
 
-    {% if list_name %}
-        <h3 style="color: blue;">Your list - {{ list_name }}</h3>
-    {% endif %}
+            {% if work %}
+                <h5 style="color: blue;">Work category:</h5>
+                    {% for case, check in work %}
+                        {% if check %}
+                            <input type="checkbox" id="work_ch" name="boxes[]" checked="checked"
+                                   value="work, {{ case }}, {{ id_list }}">
+                            <label for="work_ch">{{ case }}</label>
 
-    {% if work %}
-        <h5 style="color: blue;">Work category:</h5>
-            {% for case, check in work %}
-                {% if check %}
-                    <input type="checkbox" id="work_ch" name="boxes[]" checked="checked"
-                           value="work, {{ case }}, {{ id_list }}">
-                    <label for="work_ch">{{ case }}</label>
-
-                {% else %}
-                    <input type="checkbox" name="boxes[]" value="work, {{ case }}, {{ id_list }}">
-                    <label for="work_ch">{{ case }}</label>
+                        {% else %}
+                            <input type="checkbox" name="boxes[]" value="work, {{ case }}, {{ id_list }}">
+                            <label for="work_ch">{{ case }}</label>
+                        {% endif %}
+                        <a href="{% url 'delete_case' %}?cat_case_idl=work, {{ case }}, {{ id_list }}">Delete case</a>
+                        <br>
+                    {% endfor %}
                 {% endif %}
-                <a href="{% url 'delete_case' %}?cat_case_idl=work, {{ case }}, {{ id_list }}">Delete case</a>
                 <br>
-            {% endfor %}
-        {% endif %}
-        <br>
 
-    {% if home %}
-        <h5 style="color: blue;">Home category:</h5>
-        {% for case, check in home %}
-            {% if check %}
-                <input type="checkbox" id="home_ch" name="boxes[]" checked="checked"
-                               value="home, {{ case }}, {{id_list }}">
-                <label for="home_ch">{{ case }}</label>
-            {% else %}
-                        <input type="checkbox" name="boxes[]" value="home, {{ case }}, {{id_list }}">
+            {% if home %}
+                <h5 style="color: blue;">Home category:</h5>
+                {% for case, check in home %}
+                    {% if check %}
+                        <input type="checkbox" id="home_ch" name="boxes[]" checked="checked"
+                                       value="home, {{ case }}, {{id_list }}">
                         <label for="home_ch">{{ case }}</label>
-            {% endif %}
-            <a href="{% url 'delete_case' %}?cat_case_idl=home, {{ case }}, {{ id_list }}">Delete case</a>
-    <br>
-        {% endfor %}
-        <br>
-    {% endif %}
-
-    {% if rest %}
-        <h5 style="color: blue;">Rest category:</h5>
-        {% for case, check in rest %}
-            {% if check %}
-                <input type="checkbox" id="rest_ch" name="boxes[]" checked="checked"
-                       value="rest, {{ case }}, {{ id_list }}">
-                <label for="rest_ch">{{ case }}</label>
-            {% else %}
-                <input type="checkbox" name="boxes[]" value="rest, {{ case }}, {{ id_list }}">
-                <label for="rest_ch">{{ case }}</label>
-            {% endif %}
-            <a href="{% url 'delete_case' %}?cat_case_idl=rest, {{ case }}, {{ id_list }}">Delete case</a>
+                    {% else %}
+                                <input type="checkbox" name="boxes[]" value="home, {{ case }}, {{id_list }}">
+                                <label for="home_ch">{{ case }}</label>
+                    {% endif %}
+                    <a href="{% url 'delete_case' %}?cat_case_idl=home, {{ case }}, {{ id_list }}">Delete case</a>
             <br>
-        {% endfor %}
-        <br>
-    {% endif %}
-
-    {% if development %}
-        <h5 style="color: blue;">Development category:</h5>
-        {% for case, check in development %}
-            {% if check %}
-                <input type="checkbox" id="development_ch" name="boxes[]" checked="checked"
-                       value="development, {{ case }}, {{ id_list }}">
-                <label for="development_ch">{{ case }}</label>
-            {% else %}
-                <input type="checkbox" name="boxes[]" value="development, {{ case }}, {{id_list }}">
-                <label for="development_ch">{{ case }}</label>
+                {% endfor %}
+                <br>
             {% endif %}
-            <a href="{% url 'delete_case' %}?cat_case_idl=development, {{ case }}, {{ id_list }}">Delete case</a>
+
+            {% if rest %}
+                <h5 style="color: blue;">Rest category:</h5>
+                {% for case, check in rest %}
+                    {% if check %}
+                        <input type="checkbox" id="rest_ch" name="boxes[]" checked="checked"
+                               value="rest, {{ case }}, {{ id_list }}">
+                        <label for="rest_ch">{{ case }}</label>
+                    {% else %}
+                        <input type="checkbox" name="boxes[]" value="rest, {{ case }}, {{ id_list }}">
+                        <label for="rest_ch">{{ case }}</label>
+                    {% endif %}
+                    <a href="{% url 'delete_case' %}?cat_case_idl=rest, {{ case }}, {{ id_list }}">Delete case</a>
+                    <br>
+                {% endfor %}
+                <br>
+            {% endif %}
+
+            {% if development %}
+                <h5 style="color: blue;">Development category:</h5>
+                {% for case, check in development %}
+                    {% if check %}
+                        <input type="checkbox" id="development_ch" name="boxes[]" checked="checked"
+                               value="development, {{ case }}, {{ id_list }}">
+                        <label for="development_ch">{{ case }}</label>
+                    {% else %}
+                        <input type="checkbox" name="boxes[]" value="development, {{ case }}, {{id_list }}">
+                        <label for="development_ch">{{ case }}</label>
+                    {% endif %}
+                    <a href="{% url 'delete_case' %}?cat_case_idl=development, {{ case }}, {{ id_list }}">Delete case</a>
+                    <br>
+                {% endfor %}
+                <br>
+            {% endif %}
+
+
+        </form>
+
+        <h1>Note</h1>
+
+        <form action="{% url 'write_note' %}" method="POST">
+            {% csrf_token %}
+            <input id="id_note" name="id_note" value="{{ id_note }}" readonly hidden>
             <br>
-        {% endfor %}
-        <br>
+
+            <label>Mood: </label>
+            {% for name_mood, path in moods.items %}
+            {{mood}}
+            {{name.mood}}
+                {% if name_mood == mood %}
+                    <input type="radio" name="name_mood" value="{{ name_mood }}" checked>
+                {% else %}
+                    <input type="radio" name="name_mood" value="{{ name_mood }}">
+                {% endif %}
+                <img class="mood" src="{% static 'images/' %}{{ path }}" title="{{ mood }}">
+            {% endfor %}
+            <div>
+                <textarea name="note" cols="40" rows="5" style="overflow-y: scroll;">{{ note }}</textarea>
+                <br>
+            </div>
+
+            <br>
+
+            <label>Need to drink: </label>
+            <input type="number" id="need_cups" name="need_cups" maxlength="100" value="{{ need_cups }}">
+
+            <br>
+            <label>You drank: </label>
+            <input type="number" id="now_cups" name="now_cups" maxlength="100" value="{{ now_cups }}">
+
+            <p>You drank
+                {% if now_cups %}
+                    {{ now_cups }}
+                   {% else %}
+                    0
+                   {% endif %}
+                cups out of {{ need_cups }}
+            </p>
+
+            <button type="submit" name="save_all">Save note</button>
+
+        </form>
+
+            <br>
+
+        <form action="{% url 'new_note' %}" method="">
+            <button type="submit">Clear note</button>
+        </form>
     {% endif %}
-
-
-</form>
-
-<h1>Note</h1>
-
-<form action="{% url 'write_note' %}" method="POST">
-    {% csrf_token %}
-    <input id="id_note" name="id_note" value="{{ id_note }}" readonly hidden>
-    <br>
-
-    <label>Mood: </label>
-    {% for name_mood, path in moods.items %}
-    {{mood}}
-    {{name.mood}}
-        {% if name_mood == mood %}
-            <input type="radio" name="name_mood" value="{{ name_mood }}" checked>
-        {% else %}
-            <input type="radio" name="name_mood" value="{{ name_mood }}">
-        {% endif %}
-        <img class="mood" src="{% static 'images/' %}{{ path }}" title="{{ mood }}">
-    {% endfor %}
-    <div>
-        <textarea name="note" cols="40" rows="5" style="overflow-y: scroll;">{{ note }}</textarea>
-        <br>
-    </div>
-
-    <br>
-
-    <label>Need to drink: </label>
-    <input type="number" id="need_cups" name="need_cups" maxlength="100" value="{{ need_cups }}">
-
-    <br>
-    <label>You drank: </label>
-    <input type="number" id="now_cups" name="now_cups" maxlength="100" value="{{ now_cups }}">
-
-    <p>You drank
-        {% if now_cups %}
-            {{ now_cups }}
-           {% else %}
-            0
-           {% endif %}
-        cups out of {{ need_cups }}
-    </p>
-
-    <button type="submit" name="save_all">Save note</button>
-
-</form>
-
-    <br>
-
-<form action="{% url 'new_note' %}" method="">
-    <button type="submit">Clear note</button>
-</form>
-
-    <br>
-    <br>
-
 
 {% endblock %}

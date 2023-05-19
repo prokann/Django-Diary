@@ -22,3 +22,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('entries.urls')),
 ]
+
+handler404 = 'users.views.handler404'
+
+
