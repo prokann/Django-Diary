@@ -5,45 +5,59 @@
 {% load static %}
 {% block styles %}
     <link rel="stylesheet" href="{% static 'statistics.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'goals.css' %}" type="text/css">
 {% endblock %}
 
 
 {% block content %}
     {% if user.is_authenticated %}
-        <h1>Statistics for {{ month_n }} {{ year_ }}</h1>
-        {% include 'entries/calendar.html' with parameter='statistics' %}
+        <h1 class="h-bottom" style="font-size: 50px; margin-top: 40px;">Statistics for {{ month_n }} {{ year_ }}</h1>
+        <div class="row g-0">
+            {% include 'entries/calendar.html' with parameter='statistics' %}
 
-        {% if water_url %}
-            <h3>Water</h3>
-            <img src="{{ water_url }}">
-        {% endif %}
-        {% if mood_url %}
-            <h3>Moods</h3>
-            <img src="{{ mood_url }}">
-        {% endif %}
-
-        {% if goals %}
-            <h3>Goals</h3>
-            <form id="form" name="form" class="form_container" action="{% url 'statistics' %}" method="POST">
-                {% csrf_token %}
-                <select name="choose_goal">
-                    {% for goal in goals %}
-                        <option value="{{ goal.goal_name }}">{% if goal %} {{ goal.goal_name }} {% else %} Select a goal
-                            {% endif %}</option>
-                    {% endfor %}
-                </select>
-            <button type="submit">Choose</button>
-            </form>
-            {% if goal_url %}
-                <img src="{{ goal_url }}">
-                <p>Green color - done goal</p>
-                <p>Red - didn't achieve the goal, but should have</p>
-                <p>Grey - free day</p>
+            {% if water_url %}
+                <div class="col-sm-12 col-md-6 center">
+                    <h3 class="logo" style="text-align: center; background-color: black;  width: 100%;">Water</h3>
+                    <img style="width: 100%;" src="{{ water_url }}">
+                </div>
             {% endif %}
-        {% endif %}
+            {% if mood_url %}
+                <div class="col-sm-12 col-md-6 center">
+                    <h3 class="logo" style="text-align: center; background-color: black; width: 100%;">Moods</h3>
+                    <img style="width: 100%;" src="{{ mood_url }}">
+                </div>
+            {% endif %}
+        </div>
 
-        {% if not goal_url and not mood_url and not water_url %}
-            <h3>To display statistics, you need to fill in the data. Now we don't have them.</h3>
-        {% endif %}
-    { endif %}
+
+            {% if goals %}
+                <div class="row g-0 center">
+                    <h3 class="logo" style="text-align: center; background-color: black;  width: 100%;">Goals</h3>
+                    <form id="form" name="form" class="form_container"
+                          action="{% url 'statistics' %}" method="POST">
+                        {% csrf_token %}
+                        <select name="choose_goal">
+                            {% for goal in goals %}
+                                <option value="{{ goal.goal_name }}">
+                                    {% if goal %} {{ goal.goal_name }} {% else %} Select a goal {% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    <button type="submit" class="nav-link nav-btn edit-button">Choose a goal</button>
+                    </form>
+                    {% if goal_url %}
+                        <img class="full-img" src="{{ goal_url }}">
+                        <p><span style="color: green;">Green color</span> - done goal</p>
+                        <p><span style="color: red;">Red color</span> - didn't achieve the goal, but should have</p>
+                        <p><span style="color: grey;">Grey color</span> - free day</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+
+            {% if not goal_url and not mood_url and not water_url %}
+                <h3 class="name" style="background-color: #212529; margin-bottom: 0!important;">
+                    To display statistics, you need to fill in the data. Now we don't have them.</h3>
+            {% endif %}
+    {% endif %}
+
 {% endblock %}

@@ -1,8 +1,7 @@
-<form action="" method="POST">
+<form action="" method="POST" style="text-align: center; margin-bottom: 40px; padding: 6px;">
     {% csrf_token %}
     <select id="new_month" name="new_month">
-        <option value="{{ month_ }}" selected="selected">{% if month_n %} {{ month_n|title }} {% else %}
-            ---SELECT MONTH---{% endif %}</option>
+        <option value="{{ month_ }}" selected="selected">{{ month_n|title }}</option>
         <option value="1">January</option>
         <option value="2">February</option>
         <option value="3">March</option>
@@ -26,5 +25,6 @@
         </select>
     {% endif %}
 
-    <button type='submit'>Change</button>
+    <button type='submit' class="nav-link nav-btn" style="background-color: black; color: #d9bc6e!important;
+    display: unset;">Change</button>
 </form>

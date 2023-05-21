@@ -8,14 +8,12 @@
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <div class="sign-in">
+    <div class="sign-in">
 
-            <h1>You have been Logged out</h1>
-            <small class="text-muted ml-3"><a class="nav-link nav-btn small-button"
-                                                                         href="{% url 'login' %}">Login In Again</a></small>
-            <br>
-            <img src="{% static 'images/' %}notebook.png">
-        </div>
-    {% endif %}
+        <h1>You have been Logged out</h1>
+        <small class="text-muted ml-3"><a class="nav-link nav-btn small-button"
+                                                                     href="{% url 'login' %}">Login In Again</a></small>
+        <br>
+        <img src="{% static 'images/' %}notebook.png">
+    </div>
 {% endblock %}

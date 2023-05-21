@@ -100,14 +100,14 @@
                         </div>
 
                         <br>
-                        <p>*If you want to receive reminders about your goal in Telegram, check if you have written
+                        <p>*If you want to receive notifications about your goal in Telegram, check if you have written
                             <a href='https://t.me/tviy_den_bot'>a bot.</a></p>
 
                         <button type="submit" class="nav-link nav-btn">Save</button>
                         <div class="row g-0">
                             {% if goal_id %}
                             <div class="col">
-                                <a href="#delete_goal" onclick="deleteGoal()"><button type="button">Delete goal?</button>
+                                <a href="#delete-goal" onclick="deleteGoal()"><button type="button">Delete goal?</button>
                                 </a>
                             </div>
                             {% endif %}
@@ -116,7 +116,8 @@
                             </div>
                         </div>
                         <div id="delete-goal" style="display: none;">
-                            <a href="{% url 'delete_goal' %}?goal_id={{goal_id}}"><button type="button">Delete goal</button>
+                            <a href="{% url 'delete_goal' %}?goal_id={{goal_id}}"><button type="button">I'm sure,
+                                delete goal</button>
                             </a>
                         </div>
 
@@ -127,7 +128,7 @@
 
             {% if goals %}
                 <h3 class="h-bottom">Your goals</h3>
-                <div class="row g-0 half">
+                <div class="row g-0">
 
                     {% for goal in goals  %}
                         <div class="col-sm-6 center">

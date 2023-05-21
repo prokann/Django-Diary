@@ -35,7 +35,7 @@
     font-size: 18px;
     margin-right: 10px;
     margin-left: 10px;
-    margin-bottom: 30px!important;
+    margin-bottom: 30px;
     position: relative;
 }
 .form-container input[type=text]:valid:required, .form-container input[type=password] {
@@ -46,6 +46,13 @@
 }
  .form-container input[type=text]:focus, .form-container input[type=password]:focus {
     background-color: #ddd;
+}
+.form-container .cancel {
+    background-color: white;
+    margin-top: 10px;
+}
+ .form-container .btn:hover, .open-button:hover {
+    opacity: 1;
 }
 .form-container p {
     text-align: center;
@@ -72,6 +79,10 @@
     color: #d9bc6e;
     text-align: center;
     padding: 5px;
+}
+h3.h-bottom {
+    font-size: 50px;
+    margin-bottom: 40px;
 }
 .center {
     text-align: center;

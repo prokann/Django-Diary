@@ -1,4 +1,37 @@
-.form_popup {
+.col input[type="number"] {
+    width: 175px;
+    margin: 10px 0 10px 0;
+}
+label {
+    margin-bottom: 10px;
+    width: 140px;
+}
+textarea {
+    width: -webkit-fill-available;
+    margin: 10px!important;
+    height: 400px;
+    padding: 5px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    grid-gap: 10px;
+}
+input[type="radio"]:checked ~ .mood {
+    filter: hue-rotate(180deg);
+}
+.delete-case {
+    padding: 0 5px 0 5px!important;
+    width: min-content!important;
+    margin: 0!important;
+    color: red;
+}
+input#name_list, #case {
+    margin: 0 2.5% 10px 2.5%;
+    /* padding: 5px; */
+    width: 95%;
+}
+/*.form_popup {
     display: none;
     position: fixed;
     bottom: 0;
@@ -40,4 +73,4 @@
  .form_container .btn:hover, .open-button:hover {
     opacity: 1;
 }
-
+*/

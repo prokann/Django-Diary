@@ -1,0 +1,19 @@
+tbody, td, tfoot, th, thead, tr {
+    text-align: center;
+    background-color: #212529;
+    color: #d9bc6e;
+    padding: 6px;
+}
+.do-center {
+    justify-content: center!important;
+    display: flex;
+}
+.blue-pad {
+    background-color: #212529;
+    color: #d9bc6e;
+    padding: 5px;
+    margin: 0 5px 5px 5px;
+}
+label {
+    margin-bottom: 5px;
+}

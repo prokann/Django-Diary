@@ -1,0 +1,12 @@
+.date {
+    text-align: center; */
+    margin-bottom: 40px;
+    padding: 6px;
+    display: flex;
+    justify-content: center;
+}
+.full-img {
+    width: 80%!important;
+    margin-left: 10%;
+    margin-bottom: 10px;
+}

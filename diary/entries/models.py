@@ -7,7 +7,7 @@ class Note(models.Model):
     time = models.DateTimeField(auto_now=True)
 
     mood = models.CharField(max_length=15)
-    note = models.CharField(max_length=1000000)
+    note = models.CharField(max_length=50000)
     need_cups = models.IntegerField(default=10, blank=True, null=True)
     now_cups = models.IntegerField(default=0, blank=True, null=True)
 

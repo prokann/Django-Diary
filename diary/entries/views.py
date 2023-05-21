@@ -11,6 +11,7 @@ import plotly.graph_objs as go
 from django.http import HttpResponse
 from datetime import datetime
 from django.contrib import messages
+from django.http import Http404
 
 
 # standard funcs
@@ -23,16 +24,19 @@ def check_field(belonging, value):
 
 
 def time_filter(request, queryset_, class_, month_=None, year_=None, day_=None):
-    if day_ is None or day_ == '':
-        from_date = datetime(year_, month_, 1, 0, 0, 0, 0)
-        to_date = datetime(year_, month_, monthrange(year_, month_)[1], 0, 0, 0, 0)
-    else:
-        from_date = datetime(year_, month_, int(day_), 0, 0, 0, 0)
-        to_date = datetime(year_, month_, int(day_), 23, 59, 59, 0)
+    try:
+        if day_ is None or day_ == '':
+            from_date = datetime(year_, month_, 1, 0, 0, 0, 0)
+            to_date = datetime(year_, month_, monthrange(year_, month_)[1], 0, 0, 0, 0)
+        else:
+            from_date = datetime(year_, month_, int(day_), 0, 0, 0, 0)
+            to_date = datetime(year_, month_, int(day_), 23, 59, 59, 0)
 
-    queryset_ = class_.objects.filter(username=request.user).filter(time__gte=from_date, time__lte=to_date).\
-        values_list(queryset_)
-    return make_list(queryset_)
+        queryset_ = class_.objects.filter(username=request.user).filter(time__gte=from_date, time__lte=to_date).\
+            values_list(queryset_)
+        return make_list(queryset_)
+    except Exception as e:
+        raise Http404("Page not found")
 
 
 def make_list(queryset_, false=''):
@@ -259,7 +263,7 @@ def will_did_case(request, id_list=''):
 
     return render(request, 'entries/all_notes.html', {'notes': notes, 'lists': lists, 'calendar_': calendar_,
                                                       'day_': day_, 'month_n': month_n, 'month_': month_,
-                                                      'year_': year_})
+                                                      'year_': year_, 'moods': moods})
 
 
 def save_list(request, id_list=''):
@@ -299,7 +303,7 @@ def save_list(request, id_list=''):
         category = request.POST['categories']
         case = request.POST['case']
 
-        if case:
+        if case and category:
             try:
                 id_list = int(id_list)
                 new_list = Lists(list_id=id_list, username=request.user.username, list_name=name_list)
@@ -326,18 +330,22 @@ def save_list(request, id_list=''):
     def show_cases(class_, column):
         return make_list(class_.objects.filter(list_id=id_list).values_list(column))
 
-    work, work_app = show_cases(ListsWork, 'case_name'), show_cases(ListsWork, 'approved')
-    home, home_app = show_cases(ListsHome, 'case_name'), show_cases(ListsHome, 'approved')
-    rest, rest_app = show_cases(ListsRest, 'case_name'), show_cases(ListsRest, 'approved')
-    development, development_app = show_cases(ListsDevelopment, 'case_name'), show_cases(ListsDevelopment,
-                                                                                         'approved')
+    if id_list:
+        work, work_app = show_cases(ListsWork, 'case_name'), show_cases(ListsWork, 'approved')
+        home, home_app = show_cases(ListsHome, 'case_name'), show_cases(ListsHome, 'approved')
+        rest, rest_app = show_cases(ListsRest, 'case_name'), show_cases(ListsRest, 'approved')
+        development, development_app = show_cases(ListsDevelopment, 'case_name'), show_cases(ListsDevelopment,
+                                                                                             'approved')
 
-    work_z, home_z, rest_z, development_z = zip(work, work_app), zip(home, home_app), zip(rest, rest_app), zip(
-        development, development_app)
+        work_z, home_z, rest_z, development_z = zip(work, work_app), zip(home, home_app), zip(rest, rest_app), zip(
+            development, development_app)
 
-    return render(request, 'entries/new_note.html', {'name_list': name_list, 'work': work_z, 'home': home_z,
+        return render(request, 'entries/new_note.html', {'name_list': name_list, 'work': work_z, 'home': home_z,
                                                          'rest': rest_z, 'development': development_z,
-                                                         'need_cups': need_cups, 'id_list': id_list})
+                                                         'need_cups': need_cups, 'id_list': id_list, 'moods': moods})
+    else:
+        return render(request, 'entries/new_note.html', {'name_list': name_list, 'need_cups': need_cups,
+                                                         'moods': moods})
 
 
 def delete_list(request):
@@ -353,6 +361,7 @@ def delete_list(request):
 
     try:
         element = Lists.objects.get(list_id=int(id_list))
+        element.delete()
         if element.username != f'{request.user}':
             return HttpResponse('Something went wrong. Try again.')
 
@@ -385,10 +394,10 @@ def delete_case(request):
         ListsDevelopment.objects.filter(list_id=id_list, case_name=case).delete()
 
     # check if list not empty now
-    if not ListsWork.objects.filter(list_id=id_list) and not ListsHome.objects.filter(list_id=id_list) and \
-            not ListsRest.objects.filter(list_id=id_list) and not ListsDevelopment.objects.filter(list_id=id_list):
-        element = Lists.objects.get(list_id=id_list)
-        element.delete()
+    # if not ListsWork.objects.filter(list_id=id_list) and not ListsHome.objects.filter(list_id=id_list) and \
+    #         not ListsRest.objects.filter(list_id=id_list) and not ListsDevelopment.objects.filter(list_id=id_list):
+    #     element = Lists.objects.get(list_id=id_list)
+    #     element.delete()
     return save_list(request, id_list)
 
 
@@ -494,7 +503,7 @@ def statistics(request):
 
             fig = go.Figure(data=[trace], layout=layout)
 
-        if fig.data[0]['x'] and fig.data[0]['y'] and fig.data[1]['x'] and fig.data[1]['y']:
+        if fig.data[0]['x'] and fig.data[0]['y']:
             fig_bytes = fig.to_image(format='png', engine='kaleido')
             image = base64.b64encode(fig_bytes).decode('utf-8')
             url = 'data:image/png;base64,{}'.format(urllib.parse.quote(image))
@@ -510,6 +519,8 @@ def statistics(request):
             water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
         except Exception as e:
             water, mood, goal = build_graphic('water'), build_graphic('mood'), False
+    else:
+        water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
 
     return render(request, 'entries/statistics.html', {'month_': month_, 'year_': year_, 'month_n': month_n,
                                                        'water_url': water, 'mood_url': mood, 'goal_url': goal,
@@ -601,6 +612,7 @@ def delete_goal(request):
             return HttpResponse('Something went wrong. Try again.')
         else:
             GoalExec.objects.filter(goal_id=goal_id).delete()
+            Goal.objects.get(goal_id=goal_id).delete()
     except Exception as e:
         pass
 
