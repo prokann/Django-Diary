@@ -1,5 +1,8 @@
 <form action="" method="POST" style="text-align: center; margin-bottom: 40px; padding: 6px;">
     {% csrf_token %}
+    <input type="hidden" name="month_n" value="{{ month_n }}">
+    <input type="hidden" name="month_" value="{{ month_ }}">
+    <input type="hidden" name="goal_n" value="{{ goal_n }}">
     <select id="new_month" name="new_month">
         <option value="{{ month_ }}" selected="selected">{{ month_n|title }}</option>
         <option value="1">January</option>

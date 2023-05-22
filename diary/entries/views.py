@@ -393,11 +393,6 @@ def delete_case(request):
     elif category == 'development':
         ListsDevelopment.objects.filter(list_id=id_list, case_name=case).delete()
 
-    # check if list not empty now
-    # if not ListsWork.objects.filter(list_id=id_list) and not ListsHome.objects.filter(list_id=id_list) and \
-    #         not ListsRest.objects.filter(list_id=id_list) and not ListsDevelopment.objects.filter(list_id=id_list):
-    #     element = Lists.objects.get(list_id=id_list)
-    #     element.delete()
     return save_list(request, id_list)
 
 
@@ -433,9 +428,12 @@ def statistics(request):
     date = datetime.now()
     year_ = date.year
     if not month_:
-        month_, month_n = date.month, date.strftime("%B")
-    else:
-        month_n = calendar.month_name[int(month_)]
+        try:
+            month_ = int(request.POST['month_'])
+            # month_ = int(month_)
+        except Exception as e:
+            month_, month_n = date.month, date.strftime("%B")
+    month_n = calendar.month_name[int(month_)]
 
     def build_graphic(graph, goal_name=''):
         if not goal_name:
@@ -515,16 +513,26 @@ def statistics(request):
     goal_n = request.POST.get('choose_goal')
     if not goal_n:
         try:
-            goal_n = goals[0].goal_name
-            water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
+            goal_n = request.POST['goal_n']
         except Exception as e:
-            water, mood, goal = build_graphic('water'), build_graphic('mood'), False
-    else:
-        water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
+            pass
 
-    return render(request, 'entries/statistics.html', {'month_': month_, 'year_': year_, 'month_n': month_n,
+    if int(month_) <= date.month:
+        if not goal_n:
+            try:
+                goal_n = goals[0].goal_name
+                water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
+            except Exception as e:
+                water, mood, goal = build_graphic('water'), build_graphic('mood'), False
+        else:
+            water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
+
+        return render(request, 'entries/statistics.html', {'month_': month_, 'year_': year_, 'month_n': month_n,
                                                        'water_url': water, 'mood_url': mood, 'goal_url': goal,
-                                                       'goals': goals})
+                                                       'goals': goals, 'goal_n': goal_n})
+    else:
+        return render(request, 'entries/statistics.html', {'month_': month_, 'year_': year_, 'month_n': month_n,
+                                                           'goals': goals, 'goal_n': goal_n})
 
 
 def unhide_div(request): # new_goal

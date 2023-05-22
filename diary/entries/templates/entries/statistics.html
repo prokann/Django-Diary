@@ -32,19 +32,24 @@
 
             {% if goals %}
                 <div class="row g-0 center">
-                    <h3 class="logo" style="text-align: center; background-color: black;  width: 100%;">Goals</h3>
-                    <form id="form" name="form" class="form_container"
-                          action="{% url 'statistics' %}" method="POST">
-                        {% csrf_token %}
-                        <select name="choose_goal">
-                            {% for goal in goals %}
-                                <option value="{{ goal.goal_name }}">
-                                    {% if goal %} {{ goal.goal_name }} {% else %} Select a goal {% endif %}</option>
-                            {% endfor %}
-                        </select>
-                    <button type="submit" class="nav-link nav-btn edit-button">Choose a goal</button>
-                    </form>
                     {% if goal_url %}
+                        <h3 class="logo" style="text-align: center; background-color: black;  width: 100%;">Goals</h3>
+                        <form id="form" name="form" class="form_container"
+                              action="{% url 'statistics' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="month_n" value="{{ month_n }}">
+                            <input type="hidden" name="month_" value="{{ month_ }}">
+                            <input type="hidden" name="goal_n" value="{{ goal_n }}">
+
+                            <select name="choose_goal">
+                                <option value="{{ goal_n }}" selected="selected">{{ goal_n|title }}</option>
+                                {% for goal in goals %}
+                                    <option value="{{ goal.goal_name }}">
+                                        {% if goal %} {{ goal.goal_name }} {% else %} Select a goal {% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        <button type="submit" class="nav-link nav-btn edit-button">Choose a goal</button>
+                        </form>
                         <img class="full-img" src="{{ goal_url }}">
                         <p><span style="color: green;">Green color</span> - done goal</p>
                         <p><span style="color: red;">Red color</span> - didn't achieve the goal, but should have</p>
