@@ -1,4 +1,3 @@
-# from entries.views import make_list
 import time
 import telebot
 from django.contrib.auth.models import User
@@ -36,24 +35,25 @@ def notificate():
                                 'sunday' == day and goal.sunday:
 
                             bot.send_message(Telegram.objects.get(username=goal.username).chat_id,
-                                         f'Зараз вже {str(hour).zfill(2)}:{str(min).zfill(2)}, прийшов час виповняти ціль - '
-                                         f'{goal.goal_name}')
+                                         f"It's already {str(hour).zfill(2)}:{str(min).zfill(2)}, it's time "
+                                         f"to fulfill the goal - {goal.goal_name}")
 
             new_time = time.strftime('%A:%H:%M')
 
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
-    bot.send_message(message.chat.id, "Привіт! Напиши свій нік у Твій День, щоб ми синхронізували твій аккаунт і в "
-                                      "подальшому змогли тобі нагадувати про виконання твоїх справ. Реклами не буде, "
-                                      "обіцяємо :)")
+    bot.send_message(message.chat.id, "Hello! Write your nickname in Your Day so that we can synchronize your account "
+                                      "and in the future we can remind you about the completion of your tasks. There "
+                                      "will be no ads, we promise :)")
 
 
 @bot.message_handler(commands=['help'])
 def help(message):
-    bot.send_message(message.chat.id, 'Цей бот створено, щоб Вам приходили повідомлення про Ваші цілі у час, який Ви '
-                                      'обрали на сайті.\nЯкщо хочете його змінити чи прибрати повідомлення взагалі, '
-                                      'зайдіть на сторінку Твій День: налаштування.')
+    bot.send_message(message.chat.id, 'This bot was created so that you receive messages about your goals at the time '
+                                      'you choose on the site.\nIf you want to change it or remove the message '
+                                      'altogether, go [here](https://www.google.com) and click "Edit goal" near goal'
+                                      'you need.') #link!!
 
 
 @bot.message_handler(content_types=['text'])
@@ -65,11 +65,11 @@ def save_chat_id(message):
             else:
                 Telegram(username=message.text, chat_id=message.chat.id).save()
 
-            bot.send_message(message.chat.id, 'Супер! Ми надішлемо повідомлення, коли прийде час нагадати про справи.')
+            bot.send_message(message.chat.id, "Super! We'll send a message when it's time to remind you about things.")
         else:
-            bot.send_message(message.chat.id, 'Ви ввели неіснуючий нікнейм. Напишіть ще раз.')
+            bot.send_message(message.chat.id, 'You have entered a nickname that does not exist. Write again.')
     else:
-        bot.send_message(message.chat.id, 'Вам прийде повідомлення у час, який Ви вказали на сайті.')
+        bot.send_message(message.chat.id, 'You will receive a message at the time you indicated on the website.')
 
 
 notificate_thread = threading.Thread(target=notificate)

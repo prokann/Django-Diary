@@ -49,8 +49,6 @@ def remove_user(request):
         rem = User.objects.get(username=request.user)
         if rem is not None:
             rem.delete()
-            # messages.success(request, f'Bye, {request.user}. Your account was deleted.')
-            # return redirect('home')
         else:
             return render(request, 'users/profile.html')
     else:

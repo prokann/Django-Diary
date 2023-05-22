@@ -205,8 +205,6 @@ a.logo:hover {
 div.col.frame-left a.nav-link.nav-btn.small-button, div.col.frame-right a.nav-link.nav-btn.small-button {
     width: 160px;
     text-align: center;
-    /* align-items: center; */
-    /* justify-content: center; */
 }
 footer {
     background-color: #212529;
@@ -238,10 +236,7 @@ footer .nav-btn {
     color: #212529!important;
     background-color: white!important;
     margin-top: 10px!important;
-}/*
-.active {
-    background-color: black!important;
-}*/
+}
 .h-bottom {
     border-bottom: 1px solid #212529!important;
     color: #212529!important;
