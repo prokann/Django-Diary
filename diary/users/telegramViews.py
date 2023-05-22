@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from .models import Telegram
 from entries.models import Goal, GoalExec
 import threading
+from decouple import config
 
 
-bot = telebot.TeleBot('')
+bot = telebot.TeleBot(config('TOKEN'))
 
 
 def notificate():
