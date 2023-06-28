@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.files import File
 from .models import *
 from calendar import HTMLCalendar, month_name, monthrange
@@ -501,7 +501,7 @@ def statistics(request):
 
             fig = go.Figure(data=[trace], layout=layout)
 
-        if fig.data[0]['x'] and fig.data[0]['y']:
+        if hasattr(fig, 'data') and fig.data:
             fig_bytes = fig.to_image(format='png', engine='kaleido')
             image = base64.b64encode(fig_bytes).decode('utf-8')
             url = 'data:image/png;base64,{}'.format(urllib.parse.quote(image))
@@ -510,29 +510,25 @@ def statistics(request):
         return url
 
     goals = Goal.objects.filter(username=request.user)
-    goal_n = request.POST.get('choose_goal')
-    if not goal_n:
-        try:
-            goal_n = request.POST['goal_n']
-        except Exception as e:
-            pass
 
     if int(month_) <= date.month:
-        if not goal_n:
-            try:
-                goal_n = goals[0].goal_name
-                water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
-            except Exception as e:
-                water, mood, goal = build_graphic('water'), build_graphic('mood'), False
-        else:
+        if goals:
+            goal_n = request.POST.get('choose_goal')
+            if not goal_n:
+                try:
+                    goal_n = request.POST['goal_n']
+                except Exception as e:
+                    goal_n = goals[0].goal_name
             water, mood, goal = build_graphic('water'), build_graphic('mood'), build_graphic('goal', goal_n)
+        else:
+            water, mood, goal, goal_n = build_graphic('water'), build_graphic('mood'), False, False
 
         return render(request, 'entries/statistics.html', {'month_': month_, 'year_': year_, 'month_n': month_n,
                                                        'water_url': water, 'mood_url': mood, 'goal_url': goal,
                                                        'goals': goals, 'goal_n': goal_n})
     else:
         return render(request, 'entries/statistics.html', {'month_': month_, 'year_': year_, 'month_n': month_n,
-                                                           'goals': goals, 'goal_n': goal_n})
+                                                           'goals': goals})
 
 
 def unhide_div(request): # new_goal
@@ -579,7 +575,7 @@ def add_goal(request):
             notify = True if request.POST.get('notifications') != None else False
 
         try:
-            hour, minutes = int(hour) - 1, int(minutes) - 1
+            hour, minutes = int(hour), int(minutes)
         except Exception as e:
             messages.error(request, f"You have not filled in all the fields. Therefore, messages will not come to the"
                                     f" goal {goal}.")
@@ -609,7 +605,7 @@ def add_goal(request):
                 messages.error(request,
                                f"You didn't specify days. Therefore, messages will not come to the goal {goal}.")
 
-    return goals(request, 'True')
+    return redirect(goals)
 
 
 def delete_goal(request):
@@ -658,8 +654,8 @@ def get_goals(request):
     return goals_exec
 
 
-def goals(request, added_goal=''):
-    if request.method == 'POST' and not added_goal:
+def goals(request):
+    if request.method == 'POST':
         today = str(datetime.today()).split(' ')[0]
         need_delete = GoalExec.objects.filter(time=today)
         need_save = request.POST.getlist('days[]')

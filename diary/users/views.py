@@ -3,13 +3,6 @@ from django.contrib import messages
 from .forms import UserRegisterForm, RemoveUser
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .telegramViews import bot
-from django.http import HttpResponse
-
-
-def telegram():
-    bot.polling()
-    return HttpResponse('Telegram Bot is working :)')
 
 
 def home(request):

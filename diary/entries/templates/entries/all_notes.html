@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="{% static 'goals.css' %}" type="text/css">
 {% endblock %}
 
+{% block title %}
+    <title>All notes</title>
+{% endblock %}
+
 {% block content %}
     <div class="row g-0">
         {% if user.is_authenticated %}

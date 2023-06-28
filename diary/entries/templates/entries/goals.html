@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="{% static 'goals.css' %}">
 {% endblock %}
 
+{% block title %}
+    <title>Goals</title>
+{% endblock %}
 
 {% block content %}
     {% if user.is_authenticated %}
@@ -36,7 +39,7 @@
             {% endif %}
 
             {% if goal or unhide %}
-              <div class="col-1"></div> <!-- Empty left column with offset -->
+              <div class="col-1"></div>
                 <div id="myForm" class="col-10">
 
                     <form id="form" name="form" class="form-container" action="{% url 'add_goal' %}" method="POST">
@@ -49,7 +52,7 @@
                         {% endif %}
 
                         <label for="goal"><b>Goal</b></label><br>
-                        <input type="text" placeholder="Ціль" name="goal" id="goal" value="{{ goal }}"
+                        <input type="text" placeholder="Goal" name="goal" id="goal" value="{{ goal }}"
                                 required>
 
                         <h5>Receive messages</h5>
@@ -73,7 +76,7 @@
                         <select name="hour_category">
                             <option value="{{ hour_category }}">{% if hour_category %} {{ hour_category }} {% else %}
                                 Select an hour{% endif %}</option>
-                            {% for i in 0|range:24 %}
+                            {% for i in 1|range:25 %}
                                 <option value="{{ forloop.counter }}">{{ i }} hours</option>
                             {% endfor %}
                         </select>
@@ -83,7 +86,7 @@
                         <select name="minutes_category">
                             <option value="{{ minutes_category }}">{% if minutes_category %} {{ minutes_category }}
                                 {% else %}Select a minute{% endif %}</option>
-                            {% for i in 0|range:60 %}
+                            {% for i in 1|range:61 %}
                                 <option value="{{ forloop.counter }}">{{ i }} minutes</option>
                             {% endfor %}
                         </select>
@@ -112,7 +115,7 @@
                             </div>
                             {% endif %}
                             <div class="col">
-                                <a href="{% url 'home' %}"><button>Close</button></a>
+                                <a href="{% url 'goals' %}"><button type="button">Close</button></a>
                             </div>
                         </div>
                         <div id="delete-goal" style="display: none;">
@@ -153,7 +156,7 @@
                                 <p>You can fix this in the edit panel.</p>
                             {% endif %}
 
-                            {% if goal.notification_hour != 25 and goal.notification_minutes != 25 %}
+                            {% if goal.notification_hour != 25 %}
                                 <p>Time for messages - {{ goal.notification_hour }} : {{ goal.notification_minutes }}</p>
                             {% else %}
                                 <p>The time for messages is not specified, so they will not come.</p>

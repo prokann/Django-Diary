@@ -12,6 +12,7 @@ bot = telebot.TeleBot('')
 def notificate():
     new_time, current_time = False, True
     while True:
+        goals = Goal.objects.all()
         if new_time == current_time:
             current_time = time.strftime('%A:%H:%M')
         else:
@@ -19,7 +20,6 @@ def notificate():
             day = current_time.split(':')[0].lower()
             hour = int(current_time.split(':')[1])
             min = int(current_time.split(':')[2])
-            goals = Goal.objects.all()
 
             for goal in goals:
                 if goal.continuing and goal.notifications:
@@ -44,16 +44,16 @@ def notificate():
 @bot.message_handler(commands=['start'])
 def welcome(message):
     bot.send_message(message.chat.id, "Hello! Write your nickname in Your Day so that we can synchronize your account "
-                                      "and in the future we can remind you about the completion of your tasks. There "
+                                      "and in the future we can remind you about your tasks.\nThere "
                                       "will be no ads, we promise :)")
 
 
 @bot.message_handler(commands=['help'])
 def help(message):
-    bot.send_message(message.chat.id, 'This bot was created so that you receive messages about your goals at the time '
-                                      'you choose on the site.\nIf you want to change it or remove the message '
-                                      'altogether, go [here](https://www.google.com) and click "Edit goal" near goal'
-                                      'you need.') #link!!
+    bot.send_message(message.chat.id, 'This bot was created to remind you about your goals at the time '
+                                      'you choose on the site.\nIf you want to change it or remove messages, '
+                                      'go to http://pannrokopova.pythonanywhere.com/goals/ and click "Edit goal" near goal'
+                                      ' you need.')
 
 
 @bot.message_handler(content_types=['text'])
@@ -74,4 +74,6 @@ def save_chat_id(message):
 
 notificate_thread = threading.Thread(target=notificate)
 notificate_thread.start()
+bot.polling()
+
 
