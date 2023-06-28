@@ -4,4 +4,4 @@ pyTelegramBotAPI==4.11.0
 requests==2.30.0
 plotly==5.14.1
 kaleido==0.2.1
-python-telegram-bot==13.13
+python-decouple==3.8
